@@ -2,6 +2,7 @@ from keybert import KeyBERT
 import pandas as pd
 from bertopic import BERTopic
 import os
+from scipy.cluster import hierarchy as sch
 from spacy.lang.en import stop_words
 import numpy as np
 import nltk
@@ -44,6 +45,14 @@ def preprocessing(path):
     dataframe['keyword'] = keywords
     
     print(dataframe.head())
+
+
+    # Hierarchical topics
+    linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
+    hierarchical_topics = topic_model.hierarchical_topics(dataframe['content_filtered'], linkage_function=linkage_function)
+    print(hierarchical_topics)
+    tree = topic_model.get_topic_tree(hierarchical_topics)
+    topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
 
     #Save the dataframe in a csv
     #dataframe.to_csv(f'{path}.csv', index=False)
