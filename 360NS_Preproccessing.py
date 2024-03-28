@@ -23,7 +23,7 @@ def remove_stop_words(text):
     return ' '.join(filtered_text)
 
 
-def preprocessing(path):
+def preprocessing(path, file_name):
     dataframe = pd.read_csv(path,sep=',',index_col=0)
     print(dataframe.head())
 
@@ -53,9 +53,16 @@ def preprocessing(path):
     print(hierarchical_topics)
     tree = topic_model.get_topic_tree(hierarchical_topics)
     topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
+    print(tree)
 
     #Save the dataframe in a csv
-    #dataframe.to_csv(f'{path}.csv', index=False)
+    dataframe.to_csv(f'result/database_update.csv', index=False)
+    hierarchical_topics.to_csv(f"result/database_hierarchical_topics.csv",index=False)
+
+
+def merge_csv(file):
+        path_file_merge = ""
+        return path_file_merge
 
 if __name__ == '__main__':
 
@@ -64,8 +71,12 @@ if __name__ == '__main__':
     for fichier in os.listdir(dossier):
         path_file = os.path.join(dossier, fichier)
         
+        """if fichier.endswith('.csv'):
+            merge_path_csv = merge_csv(path_file)
+        preprocessing(merge_path_csv)
+"""
         if fichier.endswith('.csv'):
-            preprocessing(path_file)
+            preprocessing(path_file,fichier.split('.')[0])
 
 
 #https://www.youtube.com/watch?v=IZCScM_gB94&ab_channel=Cohere
