@@ -44,20 +44,19 @@ def preprocessing(path, file_name):
     keywords = kw_model.extract_keywords(dataframe['content_filtered'])
     dataframe['keyword'] = keywords
     
-    print(dataframe.head())
+    #print(dataframe.head())
 
 
     # Hierarchical topics
     linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
     hierarchical_topics = topic_model.hierarchical_topics(dataframe['content_filtered'], linkage_function=linkage_function)
-    print(hierarchical_topics)
+    
     tree = topic_model.get_topic_tree(hierarchical_topics)
     topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
-    print(tree)
 
     #Save the dataframe in a csv
-    dataframe.to_csv(f'result/database_update.csv', index=False)
-    hierarchical_topics.to_csv(f"result/database_hierarchical_topics.csv",index=False)
+    dataframe.to_csv(f'{path}/result/database_update.csv', index=False)
+    hierarchical_topics.to_csv(f"{path}/result/database_hierarchical_topics.csv",index=False)
 
 
 def merge_csv(file):
