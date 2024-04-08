@@ -24,7 +24,7 @@ def remove_stop_words(text):
 
 
 def preprocessing(path, dossier):
-    dataframe = pd.read_csv(path,sep=',',index_col=0)
+    dataframe = pd.read_csv(path,sep=',',index_col=0,encoding='utf8')
     print(dataframe.head())
 
     dataframe = dataframe.head(10000)
@@ -48,15 +48,16 @@ def preprocessing(path, dossier):
 
 
     # Hierarchical topics
-    linkage_function = lambda x: sch.linkage(x, 'single', optimal_ordering=True)
-    hierarchical_topics = topic_model.hierarchical_topics(dataframe['content_filtered'], linkage_function=linkage_function)
+    
+    hierarchical_topics = topic_model.hierarchical_topics(dataframe['content_filtered'])
     
     tree = topic_model.get_topic_tree(hierarchical_topics)
-    topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
+    fig = topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
+    fig.write_html("figure.html")
 
     #Save the dataframe in a csv
-    dataframe.to_csv(f'{dossier}/result/database_update.csv', index=False)
-    hierarchical_topics.to_csv(f"{dossier}/result/database_hierarchical_topics.csv",index=False)
+    dataframe.to_csv(f'{dossier}/result/database_update.csv', index=False,encoding='utf8')
+    hierarchical_topics.to_csv(f"{dossier}/result/database_hierarchical_topics.csv",index=False,encoding='utf8')
 
 
 def merge_csv(file):
