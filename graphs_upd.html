@@ -1,0 +1,1122 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 750px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="408">408</option>
+                                
+                                    <option value="180">180</option>
+                                
+                                    <option value="407">407</option>
+                                
+                                    <option value="162">162</option>
+                                
+                                    <option value="406">406</option>
+                                
+                                    <option value="405">405</option>
+                                
+                                    <option value="163">163</option>
+                                
+                                    <option value="404">404</option>
+                                
+                                    <option value="124">124</option>
+                                
+                                    <option value="136">136</option>
+                                
+                                    <option value="403">403</option>
+                                
+                                    <option value="402">402</option>
+                                
+                                    <option value="99">99</option>
+                                
+                                    <option value="401">401</option>
+                                
+                                    <option value="143">143</option>
+                                
+                                    <option value="91">91</option>
+                                
+                                    <option value="400">400</option>
+                                
+                                    <option value="399">399</option>
+                                
+                                    <option value="154">154</option>
+                                
+                                    <option value="191">191</option>
+                                
+                                    <option value="398">398</option>
+                                
+                                    <option value="85">85</option>
+                                
+                                    <option value="397">397</option>
+                                
+                                    <option value="396">396</option>
+                                
+                                    <option value="200">200</option>
+                                
+                                    <option value="395">395</option>
+                                
+                                    <option value="172">172</option>
+                                
+                                    <option value="152">152</option>
+                                
+                                    <option value="394">394</option>
+                                
+                                    <option value="393">393</option>
+                                
+                                    <option value="194">194</option>
+                                
+                                    <option value="196">196</option>
+                                
+                                    <option value="392">392</option>
+                                
+                                    <option value="173">173</option>
+                                
+                                    <option value="391">391</option>
+                                
+                                    <option value="390">390</option>
+                                
+                                    <option value="142">142</option>
+                                
+                                    <option value="389">389</option>
+                                
+                                    <option value="386">386</option>
+                                
+                                    <option value="87">87</option>
+                                
+                                    <option value="388">388</option>
+                                
+                                    <option value="387">387</option>
+                                
+                                    <option value="131">131</option>
+                                
+                                    <option value="192">192</option>
+                                
+                                    <option value="385">385</option>
+                                
+                                    <option value="64">64</option>
+                                
+                                    <option value="189">189</option>
+                                
+                                    <option value="92">92</option>
+                                
+                                    <option value="384">384</option>
+                                
+                                    <option value="383">383</option>
+                                
+                                    <option value="176">176</option>
+                                
+                                    <option value="382">382</option>
+                                
+                                    <option value="125">125</option>
+                                
+                                    <option value="381">381</option>
+                                
+                                    <option value="112">112</option>
+                                
+                                    <option value="117">117</option>
+                                
+                                    <option value="380">380</option>
+                                
+                                    <option value="130">130</option>
+                                
+                                    <option value="379">379</option>
+                                
+                                    <option value="378">378</option>
+                                
+                                    <option value="186">186</option>
+                                
+                                    <option value="95">95</option>
+                                
+                                    <option value="377">377</option>
+                                
+                                    <option value="376">376</option>
+                                
+                                    <option value="134">134</option>
+                                
+                                    <option value="156">156</option>
+                                
+                                    <option value="375">375</option>
+                                
+                                    <option value="160">160</option>
+                                
+                                    <option value="374">374</option>
+                                
+                                    <option value="373">373</option>
+                                
+                                    <option value="158">158</option>
+                                
+                                    <option value="187">187</option>
+                                
+                                    <option value="372">372</option>
+                                
+                                    <option value="89">89</option>
+                                
+                                    <option value="371">371</option>
+                                
+                                    <option value="208">208</option>
+                                
+                                    <option value="370">370</option>
+                                
+                                    <option value="98">98</option>
+                                
+                                    <option value="369">369</option>
+                                
+                                    <option value="368">368</option>
+                                
+                                    <option value="341">341</option>
+                                
+                                    <option value="102">102</option>
+                                
+                                    <option value="367">367</option>
+                                
+                                    <option value="82">82</option>
+                                
+                                    <option value="366">366</option>
+                                
+                                    <option value="365">365</option>
+                                
+                                    <option value="135">135</option>
+                                
+                                    <option value="202">202</option>
+                                
+                                    <option value="364">364</option>
+                                
+                                    <option value="25">25</option>
+                                
+                                    <option value="363">363</option>
+                                
+                                    <option value="362">362</option>
+                                
+                                    <option value="335">335</option>
+                                
+                                    <option value="137">137</option>
+                                
+                                    <option value="361">361</option>
+                                
+                                    <option value="360">360</option>
+                                
+                                    <option value="344">344</option>
+                                
+                                    <option value="49">49</option>
+                                
+                                    <option value="359">359</option>
+                                
+                                    <option value="153">153</option>
+                                
+                                    <option value="358">358</option>
+                                
+                                    <option value="357">357</option>
+                                
+                                    <option value="17">17</option>
+                                
+                                    <option value="100">100</option>
+                                
+                                    <option value="356">356</option>
+                                
+                                    <option value="355">355</option>
+                                
+                                    <option value="181">181</option>
+                                
+                                    <option value="199">199</option>
+                                
+                                    <option value="354">354</option>
+                                
+                                    <option value="353">353</option>
+                                
+                                    <option value="28">28</option>
+                                
+                                    <option value="133">133</option>
+                                
+                                    <option value="352">352</option>
+                                
+                                    <option value="61">61</option>
+                                
+                                    <option value="351">351</option>
+                                
+                                    <option value="115">115</option>
+                                
+                                    <option value="350">350</option>
+                                
+                                    <option value="315">315</option>
+                                
+                                    <option value="349">349</option>
+                                
+                                    <option value="348">348</option>
+                                
+                                    <option value="336">336</option>
+                                
+                                    <option value="305">305</option>
+                                
+                                    <option value="347">347</option>
+                                
+                                    <option value="101">101</option>
+                                
+                                    <option value="346">346</option>
+                                
+                                    <option value="345">345</option>
+                                
+                                    <option value="164">164</option>
+                                
+                                    <option value="165">165</option>
+                                
+                                    <option value="343">343</option>
+                                
+                                    <option value="45">45</option>
+                                
+                                    <option value="342">342</option>
+                                
+                                    <option value="207">207</option>
+                                
+                                    <option value="340">340</option>
+                                
+                                    <option value="110">110</option>
+                                
+                                    <option value="339">339</option>
+                                
+                                    <option value="320">320</option>
+                                
+                                    <option value="178">178</option>
+                                
+                                    <option value="116">116</option>
+                                
+                                    <option value="338">338</option>
+                                
+                                    <option value="170">170</option>
+                                
+                                    <option value="166">166</option>
+                                
+                                    <option value="337">337</option>
+                                
+                                    <option value="103">103</option>
+                                
+                                    <option value="234">234</option>
+                                
+                                    <option value="334">334</option>
+                                
+                                    <option value="332">332</option>
+                                
+                                    <option value="288">288</option>
+                                
+                                    <option value="139">139</option>
+                                
+                                    <option value="321">321</option>
+                                
+                                    <option value="333">333</option>
+                                
+                                    <option value="84">84</option>
+                                
+                                    <option value="171">171</option>
+                                
+                                    <option value="331">331</option>
+                                
+                                    <option value="60">60</option>
+                                
+                                    <option value="30">30</option>
+                                
+                                    <option value="261">261</option>
+                                
+                                    <option value="330">330</option>
+                                
+                                    <option value="122">122</option>
+                                
+                                    <option value="329">329</option>
+                                
+                                    <option value="113">113</option>
+                                
+                                    <option value="328">328</option>
+                                
+                                    <option value="327">327</option>
+                                
+                                    <option value="211">211</option>
+                                
+                                    <option value="326">326</option>
+                                
+                                    <option value="57">57</option>
+                                
+                                    <option value="256">256</option>
+                                
+                                    <option value="325">325</option>
+                                
+                                    <option value="324">324</option>
+                                
+                                    <option value="74">74</option>
+                                
+                                    <option value="323">323</option>
+                                
+                                    <option value="175">175</option>
+                                
+                                    <option value="322">322</option>
+                                
+                                    <option value="66">66</option>
+                                
+                                    <option value="319">319</option>
+                                
+                                    <option value="201">201</option>
+                                
+                                    <option value="184">184</option>
+                                
+                                    <option value="204">204</option>
+                                
+                                    <option value="271">271</option>
+                                
+                                    <option value="198">198</option>
+                                
+                                    <option value="141">141</option>
+                                
+                                    <option value="318">318</option>
+                                
+                                    <option value="317">317</option>
+                                
+                                    <option value="316">316</option>
+                                
+                                    <option value="274">274</option>
+                                
+                                    <option value="314">314</option>
+                                
+                                    <option value="149">149</option>
+                                
+                                    <option value="310">310</option>
+                                
+                                    <option value="193">193</option>
+                                
+                                    <option value="53">53</option>
+                                
+                                    <option value="313">313</option>
+                                
+                                    <option value="120">120</option>
+                                
+                                    <option value="312">312</option>
+                                
+                                    <option value="42">42</option>
+                                
+                                    <option value="311">311</option>
+                                
+                                    <option value="129">129</option>
+                                
+                                    <option value="71">71</option>
+                                
+                                    <option value="309">309</option>
+                                
+                                    <option value="58">58</option>
+                                
+                                    <option value="302">302</option>
+                                
+                                    <option value="44">44</option>
+                                
+                                    <option value="308">308</option>
+                                
+                                    <option value="72">72</option>
+                                
+                                    <option value="307">307</option>
+                                
+                                    <option value="306">306</option>
+                                
+                                    <option value="174">174</option>
+                                
+                                    <option value="230">230</option>
+                                
+                                    <option value="304">304</option>
+                                
+                                    <option value="127">127</option>
+                                
+                                    <option value="56">56</option>
+                                
+                                    <option value="7">7</option>
+                                
+                                    <option value="303">303</option>
+                                
+                                    <option value="167">167</option>
+                                
+                                    <option value="301">301</option>
+                                
+                                    <option value="272">272</option>
+                                
+                                    <option value="150">150</option>
+                                
+                                    <option value="300">300</option>
+                                
+                                    <option value="38">38</option>
+                                
+                                    <option value="277">277</option>
+                                
+                                    <option value="299">299</option>
+                                
+                                    <option value="298">298</option>
+                                
+                                    <option value="105">105</option>
+                                
+                                    <option value="250">250</option>
+                                
+                                    <option value="297">297</option>
+                                
+                                    <option value="81">81</option>
+                                
+                                    <option value="296">296</option>
+                                
+                                    <option value="295">295</option>
+                                
+                                    <option value="145">145</option>
+                                
+                                    <option value="2">2</option>
+                                
+                                    <option value="294">294</option>
+                                
+                                    <option value="293">293</option>
+                                
+                                    <option value="114">114</option>
+                                
+                                    <option value="292">292</option>
+                                
+                                    <option value="107">107</option>
+                                
+                                    <option value="291">291</option>
+                                
+                                    <option value="270">270</option>
+                                
+                                    <option value="290">290</option>
+                                
+                                    <option value="279">279</option>
+                                
+                                    <option value="55">55</option>
+                                
+                                    <option value="289">289</option>
+                                
+                                    <option value="26">26</option>
+                                
+                                    <option value="287">287</option>
+                                
+                                    <option value="59">59</option>
+                                
+                                    <option value="96">96</option>
+                                
+                                    <option value="285">285</option>
+                                
+                                    <option value="286">286</option>
+                                
+                                    <option value="36">36</option>
+                                
+                                    <option value="258">258</option>
+                                
+                                    <option value="276">276</option>
+                                
+                                    <option value="284">284</option>
+                                
+                                    <option value="1">1</option>
+                                
+                                    <option value="283">283</option>
+                                
+                                    <option value="282">282</option>
+                                
+                                    <option value="275">275</option>
+                                
+                                    <option value="281">281</option>
+                                
+                                    <option value="195">195</option>
+                                
+                                    <option value="280">280</option>
+                                
+                                    <option value="267">267</option>
+                                
+                                    <option value="168">168</option>
+                                
+                                    <option value="278">278</option>
+                                
+                                    <option value="220">220</option>
+                                
+                                    <option value="35">35</option>
+                                
+                                    <option value="6">6</option>
+                                
+                                    <option value="273">273</option>
+                                
+                                    <option value="251">251</option>
+                                
+                                    <option value="43">43</option>
+                                
+                                    <option value="268">268</option>
+                                
+                                    <option value="260">260</option>
+                                
+                                    <option value="37">37</option>
+                                
+                                    <option value="16">16</option>
+                                
+                                    <option value="126">126</option>
+                                
+                                    <option value="46">46</option>
+                                
+                                    <option value="269">269</option>
+                                
+                                    <option value="266">266</option>
+                                
+                                    <option value="151">151</option>
+                                
+                                    <option value="121">121</option>
+                                
+                                    <option value="32">32</option>
+                                
+                                    <option value="227">227</option>
+                                
+                                    <option value="109">109</option>
+                                
+                                    <option value="242">242</option>
+                                
+                                    <option value="62">62</option>
+                                
+                                    <option value="18">18</option>
+                                
+                                    <option value="262">262</option>
+                                
+                                    <option value="50">50</option>
+                                
+                                    <option value="254">254</option>
+                                
+                                    <option value="148">148</option>
+                                
+                                    <option value="265">265</option>
+                                
+                                    <option value="70">70</option>
+                                
+                                    <option value="3">3</option>
+                                
+                                    <option value="264">264</option>
+                                
+                                    <option value="263">263</option>
+                                
+                                    <option value="197">197</option>
+                                
+                                    <option value="221">221</option>
+                                
+                                    <option value="259">259</option>
+                                
+                                    <option value="86">86</option>
+                                
+                                    <option value="182">182</option>
+                                
+                                    <option value="69">69</option>
+                                
+                                    <option value="19">19</option>
+                                
+                                    <option value="253">253</option>
+                                
+                                    <option value="147">147</option>
+                                
+                                    <option value="257">257</option>
+                                
+                                    <option value="76">76</option>
+                                
+                                    <option value="161">161</option>
+                                
+                                    <option value="237">237</option>
+                                
+                                    <option value="252">252</option>
+                                
+                                    <option value="255">255</option>
+                                
+                                    <option value="179">179</option>
+                                
+                                    <option value="68">68</option>
+                                
+                                    <option value="138">138</option>
+                                
+                                    <option value="83">83</option>
+                                
+                                    <option value="248">248</option>
+                                
+                                    <option value="94">94</option>
+                                
+                                    <option value="13">13</option>
+                                
+                                    <option value="48">48</option>
+                                
+                                    <option value="241">241</option>
+                                
+                                    <option value="249">249</option>
+                                
+                                    <option value="190">190</option>
+                                
+                                    <option value="246">246</option>
+                                
+                                    <option value="206">206</option>
+                                
+                                    <option value="90">90</option>
+                                
+                                    <option value="78">78</option>
+                                
+                                    <option value="247">247</option>
+                                
+                                    <option value="155">155</option>
+                                
+                                    <option value="210">210</option>
+                                
+                                    <option value="0">0</option>
+                                
+                                    <option value="245">245</option>
+                                
+                                    <option value="240">240</option>
+                                
+                                    <option value="144">144</option>
+                                
+                                    <option value="244">244</option>
+                                
+                                    <option value="229">229</option>
+                                
+                                    <option value="183">183</option>
+                                
+                                    <option value="243">243</option>
+                                
+                                    <option value="238">238</option>
+                                
+                                    <option value="12">12</option>
+                                
+                                    <option value="239">239</option>
+                                
+                                    <option value="9">9</option>
+                                
+                                    <option value="80">80</option>
+                                
+                                    <option value="236">236</option>
+                                
+                                    <option value="226">226</option>
+                                
+                                    <option value="21">21</option>
+                                
+                                    <option value="188">188</option>
+                                
+                                    <option value="212">212</option>
+                                
+                                    <option value="223">223</option>
+                                
+                                    <option value="235">235</option>
+                                
+                                    <option value="34">34</option>
+                                
+                                    <option value="75">75</option>
+                                
+                                    <option value="233">233</option>
+                                
+                                    <option value="93">93</option>
+                                
+                                    <option value="77">77</option>
+                                
+                                    <option value="232">232</option>
+                                
+                                    <option value="140">140</option>
+                                
+                                    <option value="146">146</option>
+                                
+                                    <option value="205">205</option>
+                                
+                                    <option value="231">231</option>
+                                
+                                    <option value="20">20</option>
+                                
+                                    <option value="228">228</option>
+                                
+                                    <option value="225">225</option>
+                                
+                                    <option value="29">29</option>
+                                
+                                    <option value="33">33</option>
+                                
+                                    <option value="128">128</option>
+                                
+                                    <option value="88">88</option>
+                                
+                                    <option value="159">159</option>
+                                
+                                    <option value="218">218</option>
+                                
+                                    <option value="224">224</option>
+                                
+                                    <option value="73">73</option>
+                                
+                                    <option value="51">51</option>
+                                
+                                    <option value="203">203</option>
+                                
+                                    <option value="4">4</option>
+                                
+                                    <option value="106">106</option>
+                                
+                                    <option value="104">104</option>
+                                
+                                    <option value="8">8</option>
+                                
+                                    <option value="219">219</option>
+                                
+                                    <option value="222">222</option>
+                                
+                                    <option value="217">217</option>
+                                
+                                    <option value="216">216</option>
+                                
+                                    <option value="22">22</option>
+                                
+                                    <option value="5">5</option>
+                                
+                                    <option value="27">27</option>
+                                
+                                    <option value="97">97</option>
+                                
+                                    <option value="10">10</option>
+                                
+                                    <option value="111">111</option>
+                                
+                                    <option value="214">214</option>
+                                
+                                    <option value="52">52</option>
+                                
+                                    <option value="215">215</option>
+                                
+                                    <option value="40">40</option>
+                                
+                                    <option value="213">213</option>
+                                
+                                    <option value="119">119</option>
+                                
+                                    <option value="41">41</option>
+                                
+                                    <option value="123">123</option>
+                                
+                                    <option value="54">54</option>
+                                
+                                    <option value="108">108</option>
+                                
+                                    <option value="185">185</option>
+                                
+                                    <option value="209">209</option>
+                                
+                                    <option value="65">65</option>
+                                
+                                    <option value="39">39</option>
+                                
+                                    <option value="63">63</option>
+                                
+                                    <option value="31">31</option>
+                                
+                                    <option value="132">132</option>
+                                
+                                    <option value="23">23</option>
+                                
+                                    <option value="118">118</option>
+                                
+                                    <option value="14">14</option>
+                                
+                                    <option value="177">177</option>
+                                
+                                    <option value="11">11</option>
+                                
+                                    <option value="79">79</option>
+                                
+                                    <option value="157">157</option>
+                                
+                                    <option value="47">47</option>
+                                
+                                    <option value="67">67</option>
+                                
+                                    <option value="169">169</option>
+                                
+                                    <option value="15">15</option>
+                                
+                                    <option value="24">24</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "white"}, "id": 408, "label": "said_mr_would_trump_one", "shape": "dot", "title": "408\n Neighbors : [180, 407]", "value": 2}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 180, "label": "griffin_kathy_photo_comedian_cnn", "shape": "dot", "title": "180\n Neighbors : [408]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 407, "label": "said_mr_would_trump_one", "shape": "dot", "title": "407\n Neighbors : [408, 162, 406]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 162, "label": "ubisoft_players_e3_game_multiplayer", "shape": "dot", "title": "162\n Neighbors : [407]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 406, "label": "said_mr_would_trump_one", "shape": "dot", "title": "406\n Neighbors : [163, 405, 407]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 405, "label": "said_mr_would_trump_one", "shape": "dot", "title": "405\n Neighbors : [124, 404, 406]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 163, "label": "volkswagen_emissions_diesel_cars_audi", "shape": "dot", "title": "163\n Neighbors : [406]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 404, "label": "said_mr_would_trump_one", "shape": "dot", "title": "404\n Neighbors : [136, 403, 405]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 124, "label": "redstone_gawker_viacom_dauman_braunhut", "shape": "dot", "title": "124\n Neighbors : [405]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 136, "label": "dogs_dog_pape_pet_bailey", "shape": "dot", "title": "136\n Neighbors : [404]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 403, "label": "said_mr_would_trump_one", "shape": "dot", "title": "403\n Neighbors : [402, 99, 404]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 402, "label": "said_mr_would_trump_one", "shape": "dot", "title": "402\n Neighbors : [401, 403, 143]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 99, "label": "castro_cuba_cuban_cubans_havana", "shape": "dot", "title": "99\n Neighbors : [403]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 401, "label": "said_mr_would_trump_one", "shape": "dot", "title": "401\n Neighbors : [400, 402, 91]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 143, "label": "ali_aljahmi_boxing_clay_muhammad", "shape": "dot", "title": "143\n Neighbors : [402]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 91, "label": "christie_wildstein_governor_baroni_closings", "shape": "dot", "title": "91\n Neighbors : [401]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 400, "label": "said_mr_would_trump_one", "shape": "dot", "title": "400\n Neighbors : [401, 154, 399]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 399, "label": "said_mr_trump_would_one", "shape": "dot", "title": "399\n Neighbors : [400, 398, 191]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 154, "label": "marijuana_cannabis_pot_legalization_medical", "shape": "dot", "title": "154\n Neighbors : [400]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 191, "label": "hodgkinson_scalise_shooting_steve_rep", "shape": "dot", "title": "191\n Neighbors : [399]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 398, "label": "said_mr_would_trump_one", "shape": "dot", "title": "398\n Neighbors : [85, 397, 399]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 85, "label": "breitbart_siriusxm_news_daily_discuss", "shape": "dot", "title": "85\n Neighbors : [398]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 397, "label": "said_mr_would_trump_one", "shape": "dot", "title": "397\n Neighbors : [200, 396, 398]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 396, "label": "said_mr_would_trump_one", "shape": "dot", "title": "396\n Neighbors : [395, 172, 397]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 200, "label": "cosby_constand_kane_trial_evidence", "shape": "dot", "title": "200\n Neighbors : [397]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 395, "label": "said_mr_would_trump_one", "shape": "dot", "title": "395\n Neighbors : [152, 394, 396]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 172, "label": "egypt_sisi_mubarak_brotherhood_cairo", "shape": "dot", "title": "172\n Neighbors : [396]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 152, "label": "neanderthals_fossils_neanderthal_finlayson_gibraltar", "shape": "dot", "title": "152\n Neighbors : [395]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 394, "label": "said_mr_trump_would_one", "shape": "dot", "title": "394\n Neighbors : [393, 194, 395]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 393, "label": "said_mr_trump_would_one", "shape": "dot", "title": "393\n Neighbors : [392, 394, 196]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 194, "label": "farc_santos_colombia_peace_rebels", "shape": "dot", "title": "194\n Neighbors : [394]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 196, "label": "dhaka_bangladesh_traffic_bangladeshi_chowdhury", "shape": "dot", "title": "196\n Neighbors : [393]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 392, "label": "said_mr_trump_would_one", "shape": "dot", "title": "392\n Neighbors : [393, 173, 391]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 173, "label": "abe_japan_japanese_pearl_tokyo", "shape": "dot", "title": "173\n Neighbors : [392]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 391, "label": "said_mr_trump_would_one", "shape": "dot", "title": "391\n Neighbors : [392, 142, 390]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 390, "label": "said_mr_trump_would_one", "shape": "dot", "title": "390\n Neighbors : [386, 389, 391]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 142, "label": "takata_airbags_airbag_honda_recall", "shape": "dot", "title": "142\n Neighbors : [391]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 389, "label": "said_mr_trump_would_one", "shape": "dot", "title": "389\n Neighbors : [388, 390, 87]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 386, "label": "nasa_space_moon_spacex_earth", "shape": "dot", "title": "386\n Neighbors : [64, 189, 390]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 87, "label": "pope_francis_vatican_cardinal_church", "shape": "dot", "title": "87\n Neighbors : [389]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 388, "label": "said_mr_trump_would_one", "shape": "dot", "title": "388\n Neighbors : [387, 131, 389]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 387, "label": "said_mr_trump_would_one", "shape": "dot", "title": "387\n Neighbors : [192, 385, 388]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 131, "label": "golf_mickelson_putt_hole_palmer", "shape": "dot", "title": "131\n Neighbors : [388]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 192, "label": "tree_christmas_santa_valentine_gebbie", "shape": "dot", "title": "192\n Neighbors : [387]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 385, "label": "said_mr_trump_would_one", "shape": "dot", "title": "385\n Neighbors : [384, 387, 92]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 64, "label": "jupiter_dr_juno_earth_moon", "shape": "dot", "title": "64\n Neighbors : [386]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 189, "label": "spacex_space_rocket_nasa_launch", "shape": "dot", "title": "189\n Neighbors : [386]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 92, "label": "venezuela_maduro_venezuelan_chvez_malaria", "shape": "dot", "title": "92\n Neighbors : [385]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 384, "label": "said_mr_trump_would_one", "shape": "dot", "title": "384\n Neighbors : [176, 385, 383]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 383, "label": "said_mr_trump_would_one", "shape": "dot", "title": "383\n Neighbors : [384, 125, 382]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 176, "label": "broadband_cable_neutrality_internet_providers", "shape": "dot", "title": "176\n Neighbors : [384]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 382, "label": "said_mr_trump_would_one", "shape": "dot", "title": "382\n Neighbors : [112, 381, 383]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 125, "label": "samsung_galaxy_note_phones_batteries", "shape": "dot", "title": "125\n Neighbors : [383]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 381, "label": "said_mr_trump_would_one", "shape": "dot", "title": "381\n Neighbors : [380, 117, 382]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 112, "label": "park_choi_ms_south_lee", "shape": "dot", "title": "112\n Neighbors : [382]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 117, "label": "wells_fargo_bank_stumpf_accounts", "shape": "dot", "title": "117\n Neighbors : [381]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 380, "label": "said_mr_trump_would_one", "shape": "dot", "title": "380\n Neighbors : [130, 379, 381]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 130, "label": "jewish_threats_jews_bomb_centers", "shape": "dot", "title": "130\n Neighbors : [380]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 379, "label": "said_mr_trump_would_one", "shape": "dot", "title": "379\n Neighbors : [186, 378, 380]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 378, "label": "said_mr_trump_would_one", "shape": "dot", "title": "378\n Neighbors : [377, 379, 95]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 186, "label": "espn_sports_sager_musburger_basketball", "shape": "dot", "title": "186\n Neighbors : [379]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 95, "label": "duterte_philippines_philippine_davao_manila", "shape": "dot", "title": "95\n Neighbors : [378]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 377, "label": "said_mr_trump_would_one", "shape": "dot", "title": "377\n Neighbors : [376, 378, 134]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 376, "label": "said_mr_trump_would_one", "shape": "dot", "title": "376\n Neighbors : [377, 156, 375]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 134, "label": "kaepernick_anthem_nfl_colin_quarterback", "shape": "dot", "title": "134\n Neighbors : [377]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 156, "label": "flint_water_lead_residents_city", "shape": "dot", "title": "156\n Neighbors : [376]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 375, "label": "said_mr_trump_would_one", "shape": "dot", "title": "375\n Neighbors : [376, 374, 160]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 160, "label": "fire_oakland_warehouse_ghost_ng", "shape": "dot", "title": "160\n Neighbors : [375]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 374, "label": "said_mr_trump_would_one", "shape": "dot", "title": "374\n Neighbors : [373, 158, 375]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 373, "label": "said_mr_trump_would_one", "shape": "dot", "title": "373\n Neighbors : [187, 372, 374]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 158, "label": "modi_india_cash_prabhati_shashi", "shape": "dot", "title": "158\n Neighbors : [374]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 187, "label": "hitler_hollingworth_feuchtwanger_fawcett_nazi", "shape": "dot", "title": "187\n Neighbors : [373]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 372, "label": "said_mr_trump_would_one", "shape": "dot", "title": "372\n Neighbors : [89, 371, 373]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 89, "label": "zoo_animals_bear_animal_donkeys", "shape": "dot", "title": "89\n Neighbors : [372]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 371, "label": "said_mr_trump_would_one", "shape": "dot", "title": "371\n Neighbors : [208, 370, 372]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 208, "label": "israel_israeli_palestinian_netanyahu_jerusalem", "shape": "dot", "title": "208\n Neighbors : [11, 371, 79]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 370, "label": "said_mr_trump_would_one", "shape": "dot", "title": "370\n Neighbors : [369, 98, 371]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 98, "label": "earthquake_quake_amatrice_italy_earthquakes", "shape": "dot", "title": "98\n Neighbors : [370]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 369, "label": "said_mr_trump_would_one", "shape": "dot", "title": "369\n Neighbors : [368, 370, 341]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 368, "label": "mr_said_trump_would_one", "shape": "dot", "title": "368\n Neighbors : [369, 102, 367]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 341, "label": "olympic_athletes_rio_olympics_doping", "shape": "dot", "title": "341\n Neighbors : [320, 369, 178]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 102, "label": "pipeline_tribe_dakota_tribal_nooksack", "shape": "dot", "title": "102\n Neighbors : [368]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 367, "label": "mr_said_trump_would_one", "shape": "dot", "title": "367\n Neighbors : [368, 82, 366]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 82, "label": "tennis_williams_wimbledon_federer_djokovic", "shape": "dot", "title": "82\n Neighbors : [367]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 366, "label": "mr_said_trump_would_one", "shape": "dot", "title": "366\n Neighbors : [135, 365, 367]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 365, "label": "mr_said_trump_would_one", "shape": "dot", "title": "365\n Neighbors : [202, 364, 366]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 135, "label": "wine_wines_brennan_ros_drink", "shape": "dot", "title": "135\n Neighbors : [366]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 202, "label": "manning_bissonnette_sentence_knowles_cartwright", "shape": "dot", "title": "202\n Neighbors : [365]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 364, "label": "mr_said_trump_would_one", "shape": "dot", "title": "364\n Neighbors : [25, 363, 365]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 25, "label": "gun_guns_amendment_awrhawkins_awr", "shape": "dot", "title": "25\n Neighbors : [364]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 363, "label": "mr_said_trump_would_one", "shape": "dot", "title": "363\n Neighbors : [362, 364, 335]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 362, "label": "mr_said_trump_would_one", "shape": "dot", "title": "362\n Neighbors : [137, 363, 361]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 335, "label": "hockey_players_soccer_league_team", "shape": "dot", "title": "335\n Neighbors : [321, 363, 139]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 137, "label": "plane_takamatsu_egyptair_egyptian_flight", "shape": "dot", "title": "137\n Neighbors : [362]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 361, "label": "mr_said_trump_would_one", "shape": "dot", "title": "361\n Neighbors : [360, 362, 344]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 360, "label": "mr_said_trump_would_people", "shape": "dot", "title": "360\n Neighbors : [361, 359, 49]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 344, "label": "film_la_movie_best_moonlight", "shape": "dot", "title": "344\n Neighbors : [361, 45, 342]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 49, "label": "iran_iranian_tehran_rafsanjani_ayatollah", "shape": "dot", "title": "49\n Neighbors : [360]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 359, "label": "mr_said_trump_would_people", "shape": "dot", "title": "359\n Neighbors : [360, 153, 358]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 153, "label": "hajj_dubai_pilgrims_mecca_kaaba", "shape": "dot", "title": "153\n Neighbors : [359]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 358, "label": "mr_said_trump_would_people", "shape": "dot", "title": "358\n Neighbors : [17, 357, 359]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 357, "label": "mr_said_trump_would_people", "shape": "dot", "title": "357\n Neighbors : [356, 100, 358]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 17, "label": "uber_tesla_drivers_autopilot_vehicles", "shape": "dot", "title": "17\n Neighbors : [358]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 100, "label": "myanmar_aung_kyi_suu_rohingya", "shape": "dot", "title": "100\n Neighbors : [357]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 356, "label": "mr_said_trump_would_people", "shape": "dot", "title": "356\n Neighbors : [355, 357, 181]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 355, "label": "mr_said_trump_would_people", "shape": "dot", "title": "355\n Neighbors : [354, 356, 199]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 181, "label": "itt_loans_loan_education_students", "shape": "dot", "title": "181\n Neighbors : [356]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 199, "label": "foundation_billionaires_depp_feeney_charity", "shape": "dot", "title": "199\n Neighbors : [355]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 354, "label": "mr_said_trump_would_people", "shape": "dot", "title": "354\n Neighbors : [353, 355, 28]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 353, "label": "mr_said_trump_would_people", "shape": "dot", "title": "353\n Neighbors : [352, 354, 133]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 28, "label": "zika_virus_mosquitoes_pregnant_mosquito", "shape": "dot", "title": "28\n Neighbors : [354]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 133, "label": "blasio_mayor_de_city_neill", "shape": "dot", "title": "133\n Neighbors : [353]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 352, "label": "mr_said_trump_would_people", "shape": "dot", "title": "352\n Neighbors : [353, 61, 351]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 61, "label": "schools_education_devos_school_charter", "shape": "dot", "title": "61\n Neighbors : [352]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 351, "label": "mr_said_trump_would_people", "shape": "dot", "title": "351\n Neighbors : [352, 115, 350]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 115, "label": "guantnamo_detainees_torture_interrogation_prisoners", "shape": "dot", "title": "115\n Neighbors : [351]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 350, "label": "mr_said_trump_would_people", "shape": "dot", "title": "350\n Neighbors : [315, 349, 351]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 315, "label": "art_museum_painting_sotheby_artist", "shape": "dot", "title": "315\n Neighbors : [193, 53, 350]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 349, "label": "mr_said_trump_would_people", "shape": "dot", "title": "349\n Neighbors : [336, 348, 350]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 348, "label": "mr_said_trump_would_people", "shape": "dot", "title": "348\n Neighbors : [305, 347, 349]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 336, "label": "game_season_team_games_players", "shape": "dot", "title": "336\n Neighbors : [288, 332, 349]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 305, "label": "fox_ailes_kelly_reilly_news", "shape": "dot", "title": "305\n Neighbors : [56, 348, 127]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 347, "label": "mr_said_trump_would_people", "shape": "dot", "title": "347\n Neighbors : [346, 348, 101]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 101, "label": "amazon_stores_retail_store_macy", "shape": "dot", "title": "101\n Neighbors : [347]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 346, "label": "mr_said_trump_would_people", "shape": "dot", "title": "346\n Neighbors : [345, 347, 164]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 345, "label": "mr_said_trump_would_people", "shape": "dot", "title": "345\n Neighbors : [346, 165, 343]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 164, "label": "orchestra_opera_philharmonic_symphony_music", "shape": "dot", "title": "164\n Neighbors : [346]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 165, "label": "nations_haley_guterres_united_council", "shape": "dot", "title": "165\n Neighbors : [345]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 343, "label": "mr_said_trump_would_people", "shape": "dot", "title": "343\n Neighbors : [345, 340, 207]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 45, "label": "la_film_best_moonlight_academy", "shape": "dot", "title": "45\n Neighbors : [344]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 342, "label": "film_movie_million_films_ghostbusters", "shape": "dot", "title": "342\n Neighbors : [344, 339, 110]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 207, "label": "erdogan_turkey_turkish_coup_istanbul", "shape": "dot", "title": "207\n Neighbors : [47, 157, 343]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 340, "label": "mr_said_trump_would_people", "shape": "dot", "title": "340\n Neighbors : [338, 116, 343]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 110, "label": "million_warner_film_katzenberg_weekend", "shape": "dot", "title": "110\n Neighbors : [342]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 339, "label": "movie_film_ghostbusters_films_movies", "shape": "dot", "title": "339\n Neighbors : [170, 166, 342]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 320, "label": "olympic_athletes_rio_olympics_doping", "shape": "dot", "title": "320\n Neighbors : [341, 198, 271]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 178, "label": "rousseff_brazil_impeachment_temer_brazilian", "shape": "dot", "title": "178\n Neighbors : [341]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 116, "label": "college_georgetown_slaves_university_degioia", "shape": "dot", "title": "116\n Neighbors : [340]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 338, "label": "mr_trump_said_would_people", "shape": "dot", "title": "338\n Neighbors : [337, 340, 103]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 170, "label": "movie_ghostbusters_film_blatty_films", "shape": "dot", "title": "170\n Neighbors : [339]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 166, "label": "schulback_fisher_monroe_reynolds_movie", "shape": "dot", "title": "166\n Neighbors : [339]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 337, "label": "mr_trump_said_would_people", "shape": "dot", "title": "337\n Neighbors : [338, 234, 334]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 103, "label": "arctic_temperatures_ice_polar_climate", "shape": "dot", "title": "103\n Neighbors : [338]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 234, "label": "broadway_theater_hamilton_albee_show", "shape": "dot", "title": "234\n Neighbors : [337, 146, 140]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 334, "label": "mr_trump_said_would_people", "shape": "dot", "title": "334\n Neighbors : [337, 84, 333]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 332, "label": "game_season_baseball_cubs_yards", "shape": "dot", "title": "332\n Neighbors : [336, 60, 30]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 288, "label": "warriors_game_basketball_curry_season", "shape": "dot", "title": "288\n Neighbors : [336, 59, 96]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 139, "label": "hockey_howe_players_league_team", "shape": "dot", "title": "139\n Neighbors : [335]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 321, "label": "soccer_club_players_messi_bennell", "shape": "dot", "title": "321\n Neighbors : [184, 204, 335]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 333, "label": "mr_trump_said_would_people", "shape": "dot", "title": "333\n Neighbors : [331, 171, 334]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 84, "label": "saudi_arabia_prince_kingdom_bin", "shape": "dot", "title": "84\n Neighbors : [334]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 171, "label": "nordstrom_ivanka_brand_products_coulter", "shape": "dot", "title": "171\n Neighbors : [333]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 331, "label": "mr_trump_said_would_people", "shape": "dot", "title": "331\n Neighbors : [261, 330, 333]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 60, "label": "yards_game_brady_quarterback_patriots", "shape": "dot", "title": "60\n Neighbors : [332]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 30, "label": "baseball_cubs_game_mets_yankees", "shape": "dot", "title": "30\n Neighbors : [332]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 261, "label": "milo_yiannopoulos_berkeley_campus_uc", "shape": "dot", "title": "261\n Neighbors : [19, 331, 69]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 330, "label": "mr_trump_said_would_people", "shape": "dot", "title": "330\n Neighbors : [329, 122, 331]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 122, "label": "marines_marine_glenn_war_corps", "shape": "dot", "title": "122\n Neighbors : [330]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 329, "label": "mr_trump_said_would_people", "shape": "dot", "title": "329\n Neighbors : [328, 113, 330]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 113, "label": "greece_migrants_greek_libya_camps", "shape": "dot", "title": "113\n Neighbors : [329]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 328, "label": "mr_trump_said_would_people", "shape": "dot", "title": "328\n Neighbors : [329, 211, 327]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 327, "label": "mr_trump_said_would_people", "shape": "dot", "title": "327\n Neighbors : [328, 57, 326]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 211, "label": "korea_north_kim_korean_missile", "shape": "dot", "title": "211\n Neighbors : [328, 132, 31]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 326, "label": "mr_trump_said_would_people", "shape": "dot", "title": "326\n Neighbors : [256, 325, 327]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 57, "label": "abortion_parenthood_abortions_planned_clinics", "shape": "dot", "title": "57\n Neighbors : [327]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 256, "label": "apple_google_apps_app_iphone", "shape": "dot", "title": "256\n Neighbors : [179, 68, 326]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 325, "label": "mr_trump_said_would_people", "shape": "dot", "title": "325\n Neighbors : [74, 324, 326]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 324, "label": "mr_trump_said_would_people", "shape": "dot", "title": "324\n Neighbors : [323, 325, 175]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 74, "label": "rahami_ahmad_nawaz_islamic_lopez", "shape": "dot", "title": "74\n Neighbors : [325]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 323, "label": "mr_trump_said_would_people", "shape": "dot", "title": "323\n Neighbors : [322, 324, 66]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 175, "label": "wedding_married_pitt_cunningham_bride", "shape": "dot", "title": "175\n Neighbors : [324]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 322, "label": "mr_trump_said_would_people", "shape": "dot", "title": "322\n Neighbors : [201, 323, 319]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 66, "label": "airline_airlines_flight_passengers_airport", "shape": "dot", "title": "66\n Neighbors : [323]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 319, "label": "mr_trump_said_would_people", "shape": "dot", "title": "319\n Neighbors : [322, 141, 318]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 201, "label": "sleep_meditation_brain_mindfulness_misophonia", "shape": "dot", "title": "201\n Neighbors : [322]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 184, "label": "soccer_club_bennell_woodward_players", "shape": "dot", "title": "184\n Neighbors : [321]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 204, "label": "messi_argentina_soccer_cup_ronaldo", "shape": "dot", "title": "204\n Neighbors : [321]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 271, "label": "olympic_athletes_rio_olympics_doping", "shape": "dot", "title": "271\n Neighbors : [320, 32, 227]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 198, "label": "brazil_amazon_brazilian_manaus_rio", "shape": "dot", "title": "198\n Neighbors : [320]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 141, "label": "roof_pistorius_church_pinckney_penalty", "shape": "dot", "title": "141\n Neighbors : [319]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 318, "label": "mr_trump_said_would_people", "shape": "dot", "title": "318\n Neighbors : [316, 317, 319]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 317, "label": "mr_trump_said_would_people", "shape": "dot", "title": "317\n Neighbors : [274, 314, 318]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 316, "label": "show_netflix_colbert_comedy_tv", "shape": "dot", "title": "316\n Neighbors : [310, 149, 318]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 274, "label": "storm_hurricane_water_flooding_rain", "shape": "dot", "title": "274\n Neighbors : [46, 317, 126]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 314, "label": "mr_trump_said_would_people", "shape": "dot", "title": "314\n Neighbors : [120, 313, 317]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 149, "label": "apprentice_baldwin_burnett_trump_nbc", "shape": "dot", "title": "149\n Neighbors : [316]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 310, "label": "netflix_show_colbert_comedy_tv", "shape": "dot", "title": "310\n Neighbors : [58, 316, 302]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 193, "label": "museum_met_campbell_art_mercer", "shape": "dot", "title": "193\n Neighbors : [315]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 53, "label": "art_painting_sotheby_auction_artist", "shape": "dot", "title": "53\n Neighbors : [315]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 313, "label": "mr_trump_said_would_people", "shape": "dot", "title": "313\n Neighbors : [312, 314, 42]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 120, "label": "pence_indiana_mr_trump_governor", "shape": "dot", "title": "120\n Neighbors : [314]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 312, "label": "mr_trump_said_would_people", "shape": "dot", "title": "312\n Neighbors : [313, 129, 311]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 42, "label": "hastert_sexual_assault_university_campus", "shape": "dot", "title": "42\n Neighbors : [313]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 311, "label": "mr_trump_said_would_people", "shape": "dot", "title": "311\n Neighbors : [312, 309, 71]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 129, "label": "bentley_sessions_alabama_mcdonnell_attorney", "shape": "dot", "title": "129\n Neighbors : [312]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 71, "label": "le_pen_fillon_france_french", "shape": "dot", "title": "71\n Neighbors : [311]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 309, "label": "trump_mr_said_would_people", "shape": "dot", "title": "309\n Neighbors : [44, 308, 311]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 58, "label": "colbert_show_comedy_letterman_wilmore", "shape": "dot", "title": "58\n Neighbors : [310]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 302, "label": "netflix_season_tv_show_streaming", "shape": "dot", "title": "302\n Neighbors : [272, 150, 310]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 44, "label": "boko_haram_jammeh_kabila_barrow", "shape": "dot", "title": "44\n Neighbors : [309]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 308, "label": "trump_mr_said_would_people", "shape": "dot", "title": "308\n Neighbors : [72, 307, 309]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 72, "label": "london_attack_police_bst_masood", "shape": "dot", "title": "72\n Neighbors : [308]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 307, "label": "trump_mr_said_would_people", "shape": "dot", "title": "307\n Neighbors : [306, 308, 174]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 306, "label": "trump_mr_said_would_people", "shape": "dot", "title": "306\n Neighbors : [304, 307, 230]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 174, "label": "curiel_judge_civil_rights_trump", "shape": "dot", "title": "174\n Neighbors : [307]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 230, "label": "cooking_recipe_chicken_food_restaurant", "shape": "dot", "title": "230\n Neighbors : [128, 33, 306]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 304, "label": "trump_mr_said_would_president", "shape": "dot", "title": "304\n Neighbors : [306, 303, 7]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 127, "label": "kelly_nbc_fox_megyn_news", "shape": "dot", "title": "127\n Neighbors : [305]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 56, "label": "fox_ailes_reilly_news_harassment", "shape": "dot", "title": "56\n Neighbors : [305]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 7, "label": "fashion_dress_wear_melania_designer", "shape": "dot", "title": "7\n Neighbors : [304]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 303, "label": "trump_mr_said_would_president", "shape": "dot", "title": "303\n Neighbors : [304, 301, 167]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 167, "label": "carrier_jobs_ford_indiana_plant", "shape": "dot", "title": "167\n Neighbors : [303]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 301, "label": "trump_mr_said_would_president", "shape": "dot", "title": "301\n Neighbors : [300, 38, 303]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 272, "label": "season_show_thrones_series_watch", "shape": "dot", "title": "272\n Neighbors : [121, 302, 151]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 150, "label": "netflix_tv_streaming_cable_hastings", "shape": "dot", "title": "150\n Neighbors : [302]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 300, "label": "trump_mr_said_would_president", "shape": "dot", "title": "300\n Neighbors : [277, 299, 301]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 38, "label": "taliban_afghan_afghanistan_forces_kabul", "shape": "dot", "title": "38\n Neighbors : [301]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 277, "label": "police_officers_officer_shooting_shot", "shape": "dot", "title": "277\n Neighbors : [43, 251, 300]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 299, "label": "trump_mr_said_would_president", "shape": "dot", "title": "299\n Neighbors : [105, 298, 300]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 298, "label": "trump_mr_said_would_president", "shape": "dot", "title": "298\n Neighbors : [297, 250, 299]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 105, "label": "trade_mexico_nafta_ross_tariffs", "shape": "dot", "title": "105\n Neighbors : [299]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 250, "label": "mosul_islamic_iraq_iraqi_forces", "shape": "dot", "title": "250\n Neighbors : [298, 90, 206]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 297, "label": "trump_mr_said_would_president", "shape": "dot", "title": "297\n Neighbors : [296, 81, 298]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 81, "label": "travel_airbnb_trip_vacation_traffic", "shape": "dot", "title": "81\n Neighbors : [297]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 296, "label": "trump_mr_said_would_president", "shape": "dot", "title": "296\n Neighbors : [297, 145, 295]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 295, "label": "trump_mr_said_would_president", "shape": "dot", "title": "295\n Neighbors : [296, 2, 294]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 145, "label": "workers_visa_visas_foreign_jobs", "shape": "dot", "title": "145\n Neighbors : [296]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 2, "label": "album_music_songs_prince_song", "shape": "dot", "title": "2\n Neighbors : [295]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 294, "label": "trump_mr_said_president_would", "shape": "dot", "title": "294\n Neighbors : [114, 293, 295]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 293, "label": "trump_mr_said_would_president", "shape": "dot", "title": "293\n Neighbors : [107, 292, 294]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 114, "label": "budget_spending_programs_cuts_ips", "shape": "dot", "title": "114\n Neighbors : [294]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 292, "label": "trump_mr_said_would_president", "shape": "dot", "title": "292\n Neighbors : [291, 293, 270]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 107, "label": "california_los_angeles_san_proposition", "shape": "dot", "title": "107\n Neighbors : [293]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 291, "label": "trump_mr_clinton_said_would", "shape": "dot", "title": "291\n Neighbors : [290, 292, 279]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 270, "label": "judge_court_gorsuch_justice_order", "shape": "dot", "title": "270\n Neighbors : [242, 292, 109]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 290, "label": "trump_mr_clinton_said_president", "shape": "dot", "title": "290\n Neighbors : [289, 291, 55]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 279, "label": "dr_cancer_patients_drug_drugs", "shape": "dot", "title": "279\n Neighbors : [35, 291, 220]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 55, "label": "comey_fbi_investigation_director_president", "shape": "dot", "title": "55\n Neighbors : [290]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 289, "label": "trump_mr_clinton_said_would", "shape": "dot", "title": "289\n Neighbors : [290, 26, 287]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 26, "label": "cartel_gang_mexican_texas_mexico", "shape": "dot", "title": "26\n Neighbors : [289]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 287, "label": "trump_mr_clinton_said_would", "shape": "dot", "title": "287\n Neighbors : [289, 285, 286]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 59, "label": "warriors_curry_cavaliers_game_oakley", "shape": "dot", "title": "59\n Neighbors : [288]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 96, "label": "gonzaga_basketball_carolina_tournament_game", "shape": "dot", "title": "96\n Neighbors : [288]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 285, "label": "trump_mr_clinton_said_president", "shape": "dot", "title": "285\n Neighbors : [276, 284, 287]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 286, "label": "tax_fed_rate_income_percent", "shape": "dot", "title": "286\n Neighbors : [258, 36, 287]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 36, "label": "tax_income_taxes_rate_trump", "shape": "dot", "title": "36\n Neighbors : [286]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 258, "label": "fed_rate_economy_growth_rates", "shape": "dot", "title": "258\n Neighbors : [161, 237, 286]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 276, "label": "book_train_books_new_novel", "shape": "dot", "title": "276\n Neighbors : [260, 268, 285]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 284, "label": "trump_mr_clinton_president_said", "shape": "dot", "title": "284\n Neighbors : [1, 283, 285]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 1, "label": "health_insurance_care_obamacare_bill", "shape": "dot", "title": "1\n Neighbors : [284]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 283, "label": "trump_mr_clinton_president_china", "shape": "dot", "title": "283\n Neighbors : [282, 275, 284]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 282, "label": "trump_mr_clinton_china_president", "shape": "dot", "title": "282\n Neighbors : [281, 283, 195]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 275, "label": "france_paris_sweden_police_attack", "shape": "dot", "title": "275\n Neighbors : [16, 283, 37]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 281, "label": "trump_mr_clinton_china_president", "shape": "dot", "title": "281\n Neighbors : [280, 282, 267]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 195, "label": "palm_golf_club_beach_trump", "shape": "dot", "title": "195\n Neighbors : [282]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 280, "label": "trump_mr_clinton_china_mrs", "shape": "dot", "title": "280\n Neighbors : [168, 281, 278]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 267, "label": "immigration_border_immigrants_mexico_illegal", "shape": "dot", "title": "267\n Neighbors : [281, 148, 254]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 168, "label": "cruz_kasich_panton_fiorina_indiana", "shape": "dot", "title": "168\n Neighbors : [280]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 278, "label": "trump_mr_clinton_china_mrs", "shape": "dot", "title": "278\n Neighbors : [280, 273, 6]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 220, "label": "cancer_dr_patients_drug_drugs", "shape": "dot", "title": "220\n Neighbors : [97, 10, 279]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 35, "label": "weight_food_foods_exercise_diet", "shape": "dot", "title": "35\n Neighbors : [279]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 6, "label": "climate_coal_energy_pruitt_environmental", "shape": "dot", "title": "6\n Neighbors : [278]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 273, "label": "trump_clinton_mr_china_mrs", "shape": "dot", "title": "273\n Neighbors : [266, 269, 278]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 251, "label": "police_officers_officer_shooting_black", "shape": "dot", "title": "251\n Neighbors : [277, 190, 246]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 43, "label": "mateen_orlando_gay_pulse_nightclub", "shape": "dot", "title": "43\n Neighbors : [277]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 268, "label": "train_transit_city_station_new", "shape": "dot", "title": "268\n Neighbors : [50, 276, 262]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 260, "label": "book_books_novel_children_ms", "shape": "dot", "title": "260\n Neighbors : [147, 276, 253]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 37, "label": "france_paris_french_nice_bouhlel", "shape": "dot", "title": "37\n Neighbors : [275]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 16, "label": "sweden_migrants_germany_swedish_police", "shape": "dot", "title": "16\n Neighbors : [275]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 126, "label": "water_snow_california_dam_drought", "shape": "dot", "title": "126\n Neighbors : [274]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 46, "label": "storm_hurricane_flooding_rain_water", "shape": "dot", "title": "46\n Neighbors : [274]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 269, "label": "investors_firm_goldman_company_hedge", "shape": "dot", "title": "269\n Neighbors : [273, 18, 62]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 266, "label": "trump_clinton_mr_china_mrs", "shape": "dot", "title": "266\n Neighbors : [273, 265, 70]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 151, "label": "season_thrones_cersei_jaime_emmy", "shape": "dot", "title": "151\n Neighbors : [272]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 121, "label": "watch_show_series_netflix_season", "shape": "dot", "title": "121\n Neighbors : [272]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 32, "label": "athletes_doping_wada_antidoping_sports", "shape": "dot", "title": "32\n Neighbors : [271]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 227, "label": "olympic_rio_olympics_medal_gold", "shape": "dot", "title": "227\n Neighbors : [73, 51, 271]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 109, "label": "khan_muslims_muslim_islam_khans", "shape": "dot", "title": "109\n Neighbors : [270]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 242, "label": "judge_court_gorsuch_justice_supreme", "shape": "dot", "title": "242\n Neighbors : [9, 270, 239]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 62, "label": "snap_yahoo_company_hostess_snapchat", "shape": "dot", "title": "62\n Neighbors : [269]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 18, "label": "firm_goldman_hedge_fund_investors", "shape": "dot", "title": "18\n Neighbors : [269]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 262, "label": "train_transit_station_jersey_trains", "shape": "dot", "title": "262\n Neighbors : [268, 182, 86]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 50, "label": "brooklyn_city_neighborhood_building_apartment", "shape": "dot", "title": "50\n Neighbors : [268]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 254, "label": "immigration_border_immigrants_illegal_aliens", "shape": "dot", "title": "254\n Neighbors : [248, 267, 94]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 148, "label": "mexico_pea_nieto_mexican_mexicans", "shape": "dot", "title": "148\n Neighbors : [267]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 265, "label": "trump_clinton_mr_china_mrs", "shape": "dot", "title": "265\n Neighbors : [264, 266, 3]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 70, "label": "transgender_gay_bathroom_bathrooms_gender", "shape": "dot", "title": "70\n Neighbors : [266]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 3, "label": "china_chinese_beijing_xi_taiwan", "shape": "dot", "title": "3\n Neighbors : [265]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 264, "label": "trump_clinton_mr_mrs_president", "shape": "dot", "title": "264\n Neighbors : [265, 197, 263]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 263, "label": "trump_clinton_mr_mrs_president", "shape": "dot", "title": "263\n Neighbors : [264, 259, 221]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 197, "label": "carolina_north_law_charlotte_ncaa", "shape": "dot", "title": "197\n Neighbors : [264]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 221, "label": "european_britain_union_brexit_british", "shape": "dot", "title": "221\n Neighbors : [27, 5, 263]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 259, "label": "trump_clinton_mr_mrs_president", "shape": "dot", "title": "259\n Neighbors : [257, 76, 263]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 86, "label": "train_transit_jersey_station_hoboken", "shape": "dot", "title": "86\n Neighbors : [262]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 182, "label": "city_subway_transit_homeless_transportation", "shape": "dot", "title": "182\n Neighbors : [262]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 69, "label": "milo_yiannopoulos_maher_jones_twitter", "shape": "dot", "title": "69\n Neighbors : [261]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 19, "label": "berkeley_milo_campus_uc_speech", "shape": "dot", "title": "19\n Neighbors : [261]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 253, "label": "book_books_novel_read_life", "shape": "dot", "title": "253\n Neighbors : [48, 260, 13]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 147, "label": "neediest_jaylen_childs_ms_nublett", "shape": "dot", "title": "147\n Neighbors : [260]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 257, "label": "trump_clinton_mrs_mr_president", "shape": "dot", "title": "257\n Neighbors : [259, 252, 255]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 76, "label": "bannon_breitbart_evola_conservative_trump", "shape": "dot", "title": "76\n Neighbors : [259]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 161, "label": "jobs_women_men_work_pay", "shape": "dot", "title": "161\n Neighbors : [258]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 237, "label": "fed_rate_economy_growth_rates", "shape": "dot", "title": "237\n Neighbors : [258, 75, 34]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 252, "label": "clinton_trump_mrs_mr_president", "shape": "dot", "title": "252\n Neighbors : [257, 249, 241]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 255, "label": "flynn_security_adviser_kislyak_intelligence", "shape": "dot", "title": "255\n Neighbors : [257, 138, 83]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 179, "label": "google_android_apps_privacy_data", "shape": "dot", "title": "179\n Neighbors : [256]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 68, "label": "apple_google_app_apps_iphone", "shape": "dot", "title": "68\n Neighbors : [256]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 138, "label": "bannon_security_harward_national_general", "shape": "dot", "title": "138\n Neighbors : [255]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 83, "label": "flynn_kislyak_russian_intelligence_kushner", "shape": "dot", "title": "83\n Neighbors : [255]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 248, "label": "immigration_immigrants_border_aliens_illegal", "shape": "dot", "title": "248\n Neighbors : [210, 155, 254]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 94, "label": "border_wall_mexico_patrol_build", "shape": "dot", "title": "94\n Neighbors : [254]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 13, "label": "book_novel_books_read_twain", "shape": "dot", "title": "13\n Neighbors : [253]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 48, "label": "parents_retirement_indira_children_money", "shape": "dot", "title": "48\n Neighbors : [253]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 241, "label": "russia_syria_russian_syrian_aleppo", "shape": "dot", "title": "241\n Neighbors : [80, 252, 236]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 249, "label": "clinton_trump_mrs_mr_campaign", "shape": "dot", "title": "249\n Neighbors : [252, 78, 247]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 190, "label": "police_consent_baltimore_department_decree", "shape": "dot", "title": "190\n Neighbors : [251]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 246, "label": "police_officers_officer_shooting_shot", "shape": "dot", "title": "246\n Neighbors : [240, 251, 144]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 206, "label": "mosul_islamic_iraqi_iraq_falluja", "shape": "dot", "title": "206\n Neighbors : [169, 250, 67]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 90, "label": "yemen_qaeda_military_somalia_al", "shape": "dot", "title": "90\n Neighbors : [250]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 78, "label": "carson_nominees_question_perdue_ethics", "shape": "dot", "title": "78\n Neighbors : [249]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 247, "label": "clinton_trump_mrs_mr_campaign", "shape": "dot", "title": "247\n Neighbors : [0, 249, 245]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 155, "label": "border_patrol_agents_texas_illegal", "shape": "dot", "title": "155\n Neighbors : [248]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 210, "label": "immigration_immigrants_aliens_illegal_deportation", "shape": "dot", "title": "210\n Neighbors : [248, 118, 23]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 0, "label": "briefing_posted_eastern_nytimes_evening", "shape": "dot", "title": "0\n Neighbors : [247]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 245, "label": "clinton_trump_mrs_mr_voters", "shape": "dot", "title": "245\n Neighbors : [244, 229, 247]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 240, "label": "police_officers_officer_shooting_dallas", "shape": "dot", "title": "240\n Neighbors : [226, 21, 246]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 144, "label": "chicago_precinct_gang_police_crime", "shape": "dot", "title": "144\n Neighbors : [246]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 244, "label": "clinton_trump_mrs_mr_campaign", "shape": "dot", "title": "244\n Neighbors : [243, 245, 183]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 229, "label": "voter_voting_fraud_election_recount", "shape": "dot", "title": "229\n Neighbors : [88, 245, 159]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 183, "label": "gowan_ryan_lawmakers_house_republicans", "shape": "dot", "title": "183\n Neighbors : [244]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 243, "label": "clinton_trump_mrs_mr_campaign", "shape": "dot", "title": "243\n Neighbors : [244, 12, 238]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 238, "label": "clinton_trump_mrs_mr_campaign", "shape": "dot", "title": "238\n Neighbors : [243, 235, 223]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 12, "label": "facebook_news_users_times_editor", "shape": "dot", "title": "12\n Neighbors : [243]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 239, "label": "order_refugees_ban_court_states", "shape": "dot", "title": "239\n Neighbors : [242, 212, 188]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 9, "label": "gorsuch_judge_court_justice_supreme", "shape": "dot", "title": "9\n Neighbors : [242]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 80, "label": "yahoo_hackers_security_wikileaks_nso", "shape": "dot", "title": "80\n Neighbors : [241]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 236, "label": "russia_syria_russian_syrian_aleppo", "shape": "dot", "title": "236\n Neighbors : [241, 93, 233]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 226, "label": "police_officers_officer_shooting_dallas", "shape": "dot", "title": "226\n Neighbors : [240, 203, 4]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 21, "label": "inmates_prison_parole_officer_diversion", "shape": "dot", "title": "21\n Neighbors : [240]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 188, "label": "refugees_khalil_sham_refugee_sharif", "shape": "dot", "title": "188\n Neighbors : [239]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 212, "label": "order_ban_court_refugees_judge", "shape": "dot", "title": "212\n Neighbors : [63, 39, 239]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 223, "label": "clinton_mrs_voters_sanders_trump", "shape": "dot", "title": "223\n Neighbors : [217, 222, 238]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 235, "label": "trump_white_president_mr_house", "shape": "dot", "title": "235\n Neighbors : [232, 77, 238]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 34, "label": "economy_growth_labor_percent_economic", "shape": "dot", "title": "34\n Neighbors : [237]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 75, "label": "fed_rates_rate_yellen_inflation", "shape": "dot", "title": "75\n Neighbors : [237]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 233, "label": "russia_syria_syrian_russian_aleppo", "shape": "dot", "title": "233\n Neighbors : [236, 205, 231]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 93, "label": "nato_european_russia_germany_alliance", "shape": "dot", "title": "93\n Neighbors : [236]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 77, "label": "black_church_peale_trump_voters", "shape": "dot", "title": "77\n Neighbors : [235]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 232, "label": "trump_president_white_house_mr", "shape": "dot", "title": "232\n Neighbors : [235, 20, 228]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 140, "label": "broadway_hamilton_theater_musical_show", "shape": "dot", "title": "140\n Neighbors : [234]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 146, "label": "theater_albee_broadway_eustis_play", "shape": "dot", "title": "146\n Neighbors : [234]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 205, "label": "syria_syrian_aleppo_assad_russia", "shape": "dot", "title": "205\n Neighbors : [24, 233, 15]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 231, "label": "russia_putin_russian_moscow_snowden", "shape": "dot", "title": "231\n Neighbors : [233, 29, 225]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 20, "label": "march_women_protesters_organizers_protest", "shape": "dot", "title": "20\n Neighbors : [232]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 228, "label": "trump_house_president_white_mr", "shape": "dot", "title": "228\n Neighbors : [232, 224, 218]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 225, "label": "putin_russia_russian_moscow_kremlin", "shape": "dot", "title": "225\n Neighbors : [104, 106, 231]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 29, "label": "snowden_russian_wikileaks_russia_stone", "shape": "dot", "title": "29\n Neighbors : [231]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 33, "label": "recipe_cooking_chicken_recipes_meat", "shape": "dot", "title": "33\n Neighbors : [230]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 128, "label": "restaurant_food_menu_chef_restaurants", "shape": "dot", "title": "128\n Neighbors : [230]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 88, "label": "voter_fraud_recount_election_voting", "shape": "dot", "title": "88\n Neighbors : [229]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 159, "label": "mccrory_id_voting_cooper_voter", "shape": "dot", "title": "159\n Neighbors : [229]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 218, "label": "trump_kushner_mr_president_white", "shape": "dot", "title": "218\n Neighbors : [228, 52, 215]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 224, "label": "spicer_trump_intelligence_news_press", "shape": "dot", "title": "224\n Neighbors : [8, 219, 228]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 73, "label": "rio_olympic_olympics_lochte_athletes", "shape": "dot", "title": "73\n Neighbors : [227]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 51, "label": "medal_gold_olympic_biles_olympics", "shape": "dot", "title": "51\n Neighbors : [227]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 203, "label": "dallas_berrigan_police_officers_black", "shape": "dot", "title": "203\n Neighbors : [226]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 4, "label": "police_officers_officer_shooting_shot", "shape": "dot", "title": "4\n Neighbors : [226]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 106, "label": "navalny_putin_russian_russia_moscow", "shape": "dot", "title": "106\n Neighbors : [225]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 104, "label": "putin_russia_ukraine_russian_moscow", "shape": "dot", "title": "104\n Neighbors : [225]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 8, "label": "media_press_news_spicer_trump", "shape": "dot", "title": "8\n Neighbors : [224]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 219, "label": "intelligence_nunes_surveillance_obama_trump", "shape": "dot", "title": "219\n Neighbors : [224, 214, 111]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 222, "label": "voters_republican_trump_clinton_mrs", "shape": "dot", "title": "222\n Neighbors : [216, 22, 223]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 217, "label": "clinton_mrs_sanders_emails_campaign", "shape": "dot", "title": "217\n Neighbors : [40, 213, 223]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 216, "label": "republican_trump_party_donors_republicans", "shape": "dot", "title": "216\n Neighbors : [41, 222, 119]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 22, "label": "voters_polls_clinton_mrs_turnout", "shape": "dot", "title": "22\n Neighbors : [222]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 5, "label": "britain_european_union_brexit_british", "shape": "dot", "title": "5\n Neighbors : [221]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 27, "label": "european_merkel_wilders_germany_renzi", "shape": "dot", "title": "27\n Neighbors : [221]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 97, "label": "dr_medical_brain_blast_patients", "shape": "dot", "title": "97\n Neighbors : [220]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 10, "label": "cancer_patients_dr_drug_drugs", "shape": "dot", "title": "10\n Neighbors : [220]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 111, "label": "spicer_surveillance_obama_trump_president", "shape": "dot", "title": "111\n Neighbors : [219]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 214, "label": "intelligence_nunes_rice_committee_surveillance", "shape": "dot", "title": "214\n Neighbors : [185, 219, 108]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 52, "label": "kushner_trump_ethics_business_organization", "shape": "dot", "title": "52\n Neighbors : [218]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 215, "label": "obama_trump_white_president_applause", "shape": "dot", "title": "215\n Neighbors : [218, 123, 54]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 40, "label": "sanders_clinton_mrs_campaign_democratic", "shape": "dot", "title": "40\n Neighbors : [217]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 213, "label": "clinton_mrs_emails_comey_email", "shape": "dot", "title": "213\n Neighbors : [65, 217, 209]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 119, "label": "donors_campaign_million_trump_clinton", "shape": "dot", "title": "119\n Neighbors : [216]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 41, "label": "republican_trump_party_republicans_convention", "shape": "dot", "title": "41\n Neighbors : [216]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 123, "label": "trump_white_house_kushner_priebus", "shape": "dot", "title": "123\n Neighbors : [215]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 54, "label": "obama_applause_inaugural_president_inauguration", "shape": "dot", "title": "54\n Neighbors : [215]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 108, "label": "rice_intelligence_nunes_surveillance_obama", "shape": "dot", "title": "108\n Neighbors : [214]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 185, "label": "intelligence_nunes_centcom_warner_committee", "shape": "dot", "title": "185\n Neighbors : [214]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 209, "label": "clinton_mrs_emails_comey_email", "shape": "dot", "title": "209\n Neighbors : [177, 213, 14]", "value": 3}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 65, "label": "clinton_debate_mrs_trump_women", "shape": "dot", "title": "65\n Neighbors : [213]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 39, "label": "order_refugees_ban_countries_united", "shape": "dot", "title": "39\n Neighbors : [212]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 63, "label": "order_court_judge_circuit_ninth", "shape": "dot", "title": "63\n Neighbors : [212]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 31, "label": "korea_north_missile_korean_nuclear", "shape": "dot", "title": "31\n Neighbors : [211]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 132, "label": "kim_korean_north_korea_malaysia", "shape": "dot", "title": "132\n Neighbors : [211]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 23, "label": "immigration_aliens_ice_immigrants_enforcement", "shape": "dot", "title": "23\n Neighbors : [210]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 118, "label": "immigration_immigrants_trump_illegal_border", "shape": "dot", "title": "118\n Neighbors : [210]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 14, "label": "clinton_mrs_emails_comey_email", "shape": "dot", "title": "14\n Neighbors : [209]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 177, "label": "clinton_mrs_clintons_keane_hillary", "shape": "dot", "title": "177\n Neighbors : [209]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 11, "label": "israel_netanyahu_israeli_jerusalem_palestinian", "shape": "dot", "title": "11\n Neighbors : [208]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 79, "label": "palestinian_israeli_gaza_kerr_hamas", "shape": "dot", "title": "79\n Neighbors : [208]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 157, "label": "turkey_istanbul_turkish_erdogan_kurdish", "shape": "dot", "title": "157\n Neighbors : [207]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 47, "label": "erdogan_turkey_coup_turkish_istanbul", "shape": "dot", "title": "47\n Neighbors : [207]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 67, "label": "mosul_iraqi_islamic_iraq_falluja", "shape": "dot", "title": "67\n Neighbors : [206]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 169, "label": "islamic_mosul_iraq_iraqi_surt", "shape": "dot", "title": "169\n Neighbors : [206]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 15, "label": "aleppo_syrian_syria_assad_rebels", "shape": "dot", "title": "15\n Neighbors : [205]", "value": 1}, {"color": "#97c2fc", "font": {"color": "white"}, "id": 24, "label": "syria_assad_syrian_russia_kerry", "shape": "dot", "title": "24\n Neighbors : [205]", "value": 1}]);
+                  edges = new vis.DataSet([{"from": 408, "to": 180, "value": 0.8434451223861967}, {"from": 408, "to": 407, "value": 0.8434451223861967}, {"from": 407, "to": 162, "value": 0.8403239365486956}, {"from": 407, "to": 406, "value": 0.8403239365486956}, {"from": 406, "to": 405, "value": 0.8253804584050124}, {"from": 406, "to": 163, "value": 0.8253804584050124}, {"from": 405, "to": 404, "value": 0.7963739558732437}, {"from": 405, "to": 124, "value": 0.7963739558732437}, {"from": 404, "to": 136, "value": 0.7961146841923313}, {"from": 404, "to": 403, "value": 0.7961146841923313}, {"from": 403, "to": 402, "value": 0.7919451499155192}, {"from": 403, "to": 99, "value": 0.7919451499155192}, {"from": 402, "to": 401, "value": 0.7888102157140394}, {"from": 402, "to": 143, "value": 0.7888102157140394}, {"from": 401, "to": 91, "value": 0.7760587108074545}, {"from": 401, "to": 400, "value": 0.7760587108074545}, {"from": 400, "to": 399, "value": 0.7760445011025245}, {"from": 400, "to": 154, "value": 0.7760445011025245}, {"from": 399, "to": 191, "value": 0.7718067056955116}, {"from": 399, "to": 398, "value": 0.7718067056955116}, {"from": 398, "to": 85, "value": 0.7690699884649048}, {"from": 398, "to": 397, "value": 0.7690699884649048}, {"from": 397, "to": 396, "value": 0.764956481947191}, {"from": 397, "to": 200, "value": 0.764956481947191}, {"from": 396, "to": 395, "value": 0.7635714045853592}, {"from": 396, "to": 172, "value": 0.7635714045853592}, {"from": 395, "to": 152, "value": 0.7635305978771398}, {"from": 395, "to": 394, "value": 0.7635305978771398}, {"from": 394, "to": 393, "value": 0.7624137303873574}, {"from": 394, "to": 194, "value": 0.7624137303873574}, {"from": 393, "to": 196, "value": 0.7603194408059112}, {"from": 393, "to": 392, "value": 0.7603194408059112}, {"from": 392, "to": 173, "value": 0.7602590375094871}, {"from": 392, "to": 391, "value": 0.7602590375094871}, {"from": 391, "to": 390, "value": 0.7584365576433887}, {"from": 391, "to": 142, "value": 0.7584365576433887}, {"from": 390, "to": 389, "value": 0.7506793115710588}, {"from": 390, "to": 386, "value": 0.7506793115710588}, {"from": 389, "to": 87, "value": 0.7480730787099423}, {"from": 389, "to": 388, "value": 0.7480730787099423}, {"from": 388, "to": 387, "value": 0.7435777113342594}, {"from": 388, "to": 131, "value": 0.7435777113342594}, {"from": 387, "to": 192, "value": 0.7419646516094898}, {"from": 387, "to": 385, "value": 0.7419646516094898}, {"from": 386, "to": 64, "value": 0.7401460186882406}, {"from": 386, "to": 189, "value": 0.7401460186882406}, {"from": 385, "to": 92, "value": 0.7392297292406926}, {"from": 385, "to": 384, "value": 0.7392297292406926}, {"from": 384, "to": 383, "value": 0.7378146518617067}, {"from": 384, "to": 176, "value": 0.7378146518617067}, {"from": 383, "to": 382, "value": 0.734939879698171}, {"from": 383, "to": 125, "value": 0.734939879698171}, {"from": 382, "to": 381, "value": 0.7314748452957769}, {"from": 382, "to": 112, "value": 0.7314748452957769}, {"from": 381, "to": 117, "value": 0.7309230548250962}, {"from": 381, "to": 380, "value": 0.7309230548250962}, {"from": 380, "to": 130, "value": 0.7274465332101918}, {"from": 380, "to": 379, "value": 0.7274465332101918}, {"from": 379, "to": 378, "value": 0.7268814740996279}, {"from": 379, "to": 186, "value": 0.7268814740996279}, {"from": 378, "to": 95, "value": 0.723793016479678}, {"from": 378, "to": 377, "value": 0.723793016479678}, {"from": 377, "to": 376, "value": 0.7209863832773545}, {"from": 377, "to": 134, "value": 0.7209863832773545}, {"from": 376, "to": 156, "value": 0.7206360557467191}, {"from": 376, "to": 375, "value": 0.7206360557467191}, {"from": 375, "to": 160, "value": 0.7203203112171341}, {"from": 375, "to": 374, "value": 0.7203203112171341}, {"from": 374, "to": 373, "value": 0.7187682794172863}, {"from": 374, "to": 158, "value": 0.7187682794172863}, {"from": 373, "to": 187, "value": 0.715053958922528}, {"from": 373, "to": 372, "value": 0.715053958922528}, {"from": 372, "to": 89, "value": 0.7143479891925653}, {"from": 372, "to": 371, "value": 0.7143479891925653}, {"from": 371, "to": 208, "value": 0.7132193021319958}, {"from": 371, "to": 370, "value": 0.7132193021319958}, {"from": 370, "to": 98, "value": 0.7117239243551297}, {"from": 370, "to": 369, "value": 0.7117239243551297}, {"from": 369, "to": 368, "value": 0.7105769646114437}, {"from": 369, "to": 341, "value": 0.7105769646114437}, {"from": 368, "to": 102, "value": 0.7084662919056948}, {"from": 368, "to": 367, "value": 0.7084662919056948}, {"from": 367, "to": 82, "value": 0.702688986479495}, {"from": 367, "to": 366, "value": 0.702688986479495}, {"from": 366, "to": 365, "value": 0.7021943991178217}, {"from": 366, "to": 135, "value": 0.7021943991178217}, {"from": 365, "to": 202, "value": 0.6999885168628266}, {"from": 365, "to": 364, "value": 0.6999885168628266}, {"from": 364, "to": 25, "value": 0.698308766066065}, {"from": 364, "to": 363, "value": 0.698308766066065}, {"from": 363, "to": 362, "value": 0.6965638323359811}, {"from": 363, "to": 335, "value": 0.6965638323359811}, {"from": 362, "to": 137, "value": 0.695851053862856}, {"from": 362, "to": 361, "value": 0.695851053862856}, {"from": 361, "to": 360, "value": 0.6956391360143943}, {"from": 361, "to": 344, "value": 0.6956391360143943}, {"from": 360, "to": 49, "value": 0.6943349864800985}, {"from": 360, "to": 359, "value": 0.6943349864800985}, {"from": 359, "to": 153, "value": 0.6915890846656276}, {"from": 359, "to": 358, "value": 0.6915890846656276}, {"from": 358, "to": 357, "value": 0.6893365819798469}, {"from": 358, "to": 17, "value": 0.6893365819798469}, {"from": 357, "to": 100, "value": 0.6875507352396789}, {"from": 357, "to": 356, "value": 0.6875507352396789}, {"from": 356, "to": 355, "value": 0.6872951509173799}, {"from": 356, "to": 181, "value": 0.6872951509173799}, {"from": 355, "to": 199, "value": 0.684871687535052}, {"from": 355, "to": 354, "value": 0.684871687535052}, {"from": 354, "to": 353, "value": 0.684264604438774}, {"from": 354, "to": 28, "value": 0.684264604438774}, {"from": 353, "to": 133, "value": 0.6835946186441555}, {"from": 353, "to": 352, "value": 0.6835946186441555}, {"from": 352, "to": 61, "value": 0.6831324954863057}, {"from": 352, "to": 351, "value": 0.6831324954863057}, {"from": 351, "to": 115, "value": 0.6828672966996353}, {"from": 351, "to": 350, "value": 0.6828672966996353}, {"from": 350, "to": 315, "value": 0.6807776859062848}, {"from": 350, "to": 349, "value": 0.6807776859062848}, {"from": 349, "to": 348, "value": 0.6807623336380451}, {"from": 349, "to": 336, "value": 0.6807623336380451}, {"from": 348, "to": 305, "value": 0.6804350618453197}, {"from": 348, "to": 347, "value": 0.6804350618453197}, {"from": 347, "to": 101, "value": 0.6800129548850121}, {"from": 347, "to": 346, "value": 0.6800129548850121}, {"from": 346, "to": 345, "value": 0.6783601244334534}, {"from": 346, "to": 164, "value": 0.6783601244334534}, {"from": 345, "to": 165, "value": 0.6780564854373153}, {"from": 345, "to": 343, "value": 0.6780564854373153}, {"from": 344, "to": 45, "value": 0.6780559294426509}, {"from": 344, "to": 342, "value": 0.6780559294426509}, {"from": 343, "to": 207, "value": 0.6768491819021548}, {"from": 343, "to": 340, "value": 0.6768491819021548}, {"from": 342, "to": 110, "value": 0.6757445967259144}, {"from": 342, "to": 339, "value": 0.6757445967259144}, {"from": 341, "to": 320, "value": 0.6725367608346461}, {"from": 341, "to": 178, "value": 0.6725367608346461}, {"from": 340, "to": 116, "value": 0.6715156999876087}, {"from": 340, "to": 338, "value": 0.6715156999876087}, {"from": 339, "to": 170, "value": 0.6692618426190091}, {"from": 339, "to": 166, "value": 0.6692618426190091}, {"from": 338, "to": 337, "value": 0.6689852552100828}, {"from": 338, "to": 103, "value": 0.6689852552100828}, {"from": 337, "to": 234, "value": 0.6681730282647396}, {"from": 337, "to": 334, "value": 0.6681730282647396}, {"from": 336, "to": 332, "value": 0.6669170731802483}, {"from": 336, "to": 288, "value": 0.6669170731802483}, {"from": 335, "to": 139, "value": 0.6642415167340132}, {"from": 335, "to": 321, "value": 0.6642415167340132}, {"from": 334, "to": 333, "value": 0.6638740974050026}, {"from": 334, "to": 84, "value": 0.6638740974050026}, {"from": 333, "to": 171, "value": 0.6637536536484163}, {"from": 333, "to": 331, "value": 0.6637536536484163}, {"from": 332, "to": 60, "value": 0.6629690433455048}, {"from": 332, "to": 30, "value": 0.6629690433455048}, {"from": 331, "to": 261, "value": 0.6625114787623863}, {"from": 331, "to": 330, "value": 0.6625114787623863}, {"from": 330, "to": 122, "value": 0.6605070742776258}, {"from": 330, "to": 329, "value": 0.6605070742776258}, {"from": 329, "to": 113, "value": 0.6591157693186108}, {"from": 329, "to": 328, "value": 0.6591157693186108}, {"from": 328, "to": 327, "value": 0.6581440198312963}, {"from": 328, "to": 211, "value": 0.6581440198312963}, {"from": 327, "to": 326, "value": 0.6578481297645944}, {"from": 327, "to": 57, "value": 0.6578481297645944}, {"from": 326, "to": 256, "value": 0.6543554693617872}, {"from": 326, "to": 325, "value": 0.6543554693617872}, {"from": 325, "to": 324, "value": 0.6530736573264613}, {"from": 325, "to": 74, "value": 0.6530736573264613}, {"from": 324, "to": 323, "value": 0.6528882858595497}, {"from": 324, "to": 175, "value": 0.6528882858595497}, {"from": 323, "to": 322, "value": 0.65168872726591}, {"from": 323, "to": 66, "value": 0.65168872726591}, {"from": 322, "to": 319, "value": 0.6510105213687284}, {"from": 322, "to": 201, "value": 0.6510105213687284}, {"from": 321, "to": 184, "value": 0.6508806640933351}, {"from": 321, "to": 204, "value": 0.6508806640933351}, {"from": 320, "to": 271, "value": 0.6485987985569492}, {"from": 320, "to": 198, "value": 0.6485987985569492}, {"from": 319, "to": 141, "value": 0.6485029288391986}, {"from": 319, "to": 318, "value": 0.6485029288391986}, {"from": 318, "to": 317, "value": 0.6481473029878113}, {"from": 318, "to": 316, "value": 0.6481473029878113}, {"from": 317, "to": 274, "value": 0.644601098790371}, {"from": 317, "to": 314, "value": 0.644601098790371}, {"from": 316, "to": 149, "value": 0.6390852408714722}, {"from": 316, "to": 310, "value": 0.6390852408714722}, {"from": 315, "to": 193, "value": 0.6356208719197072}, {"from": 315, "to": 53, "value": 0.6356208719197072}, {"from": 314, "to": 313, "value": 0.6351872929852832}, {"from": 314, "to": 120, "value": 0.6351872929852832}, {"from": 313, "to": 312, "value": 0.6341052220445967}, {"from": 313, "to": 42, "value": 0.6341052220445967}, {"from": 312, "to": 311, "value": 0.6336149511606797}, {"from": 312, "to": 129, "value": 0.6336149511606797}, {"from": 311, "to": 71, "value": 0.6326104657933798}, {"from": 311, "to": 309, "value": 0.6326104657933798}, {"from": 310, "to": 58, "value": 0.6315859684227041}, {"from": 310, "to": 302, "value": 0.6315859684227041}, {"from": 309, "to": 44, "value": 0.6293315428055469}, {"from": 309, "to": 308, "value": 0.6293315428055469}, {"from": 308, "to": 72, "value": 0.6265502671670413}, {"from": 308, "to": 307, "value": 0.6265502671670413}, {"from": 307, "to": 306, "value": 0.6259635305757597}, {"from": 307, "to": 174, "value": 0.6259635305757597}, {"from": 306, "to": 230, "value": 0.6245795977835411}, {"from": 306, "to": 304, "value": 0.6245795977835411}, {"from": 305, "to": 127, "value": 0.623419525279686}, {"from": 305, "to": 56, "value": 0.623419525279686}, {"from": 304, "to": 7, "value": 0.6215739878683617}, {"from": 304, "to": 303, "value": 0.6215739878683617}, {"from": 303, "to": 167, "value": 0.6212504871561813}, {"from": 303, "to": 301, "value": 0.6212504871561813}, {"from": 302, "to": 272, "value": 0.6201238304550309}, {"from": 302, "to": 150, "value": 0.6201238304550309}, {"from": 301, "to": 300, "value": 0.6199087323586263}, {"from": 301, "to": 38, "value": 0.6199087323586263}, {"from": 300, "to": 277, "value": 0.6187817208775475}, {"from": 300, "to": 299, "value": 0.6187817208775475}, {"from": 299, "to": 298, "value": 0.6169731747572116}, {"from": 299, "to": 105, "value": 0.6169731747572116}, {"from": 298, "to": 250, "value": 0.6164617765999789}, {"from": 298, "to": 297, "value": 0.6164617765999789}, {"from": 297, "to": 81, "value": 0.612816032132125}, {"from": 297, "to": 296, "value": 0.612816032132125}, {"from": 296, "to": 295, "value": 0.6126653814009446}, {"from": 296, "to": 145, "value": 0.6126653814009446}, {"from": 295, "to": 2, "value": 0.6125003299008318}, {"from": 295, "to": 294, "value": 0.6125003299008318}, {"from": 294, "to": 293, "value": 0.6123714856816148}, {"from": 294, "to": 114, "value": 0.6123714856816148}, {"from": 293, "to": 292, "value": 0.6117126645697989}, {"from": 293, "to": 107, "value": 0.6117126645697989}, {"from": 292, "to": 291, "value": 0.611608054653443}, {"from": 292, "to": 270, "value": 0.611608054653443}, {"from": 291, "to": 290, "value": 0.610853066149347}, {"from": 291, "to": 279, "value": 0.610853066149347}, {"from": 290, "to": 55, "value": 0.6094628436147629}, {"from": 290, "to": 289, "value": 0.6094628436147629}, {"from": 289, "to": 26, "value": 0.6074182999339178}, {"from": 289, "to": 287, "value": 0.6074182999339178}, {"from": 288, "to": 59, "value": 0.6062215564158757}, {"from": 288, "to": 96, "value": 0.6062215564158757}, {"from": 287, "to": 285, "value": 0.6037435929930135}, {"from": 287, "to": 286, "value": 0.6037435929930135}, {"from": 286, "to": 36, "value": 0.60256153461906}, {"from": 286, "to": 258, "value": 0.60256153461906}, {"from": 285, "to": 276, "value": 0.6024269125409096}, {"from": 285, "to": 284, "value": 0.6024269125409096}, {"from": 284, "to": 1, "value": 0.6009841266372254}, {"from": 284, "to": 283, "value": 0.6009841266372254}, {"from": 283, "to": 282, "value": 0.5995152059450775}, {"from": 283, "to": 275, "value": 0.5995152059450775}, {"from": 282, "to": 281, "value": 0.5990935854001933}, {"from": 282, "to": 195, "value": 0.5990935854001933}, {"from": 281, "to": 280, "value": 0.5960812499910594}, {"from": 281, "to": 267, "value": 0.5960812499910594}, {"from": 280, "to": 168, "value": 0.5944062292449065}, {"from": 280, "to": 278, "value": 0.5944062292449065}, {"from": 279, "to": 220, "value": 0.5934618418621803}, {"from": 279, "to": 35, "value": 0.5934618418621803}, {"from": 278, "to": 6, "value": 0.5921040660030701}, {"from": 278, "to": 273, "value": 0.5921040660030701}, {"from": 277, "to": 251, "value": 0.590944070230897}, {"from": 277, "to": 43, "value": 0.590944070230897}, {"from": 276, "to": 268, "value": 0.5886641920962603}, {"from": 276, "to": 260, "value": 0.5886641920962603}, {"from": 275, "to": 37, "value": 0.588038638247836}, {"from": 275, "to": 16, "value": 0.588038638247836}, {"from": 274, "to": 126, "value": 0.5855586075446889}, {"from": 274, "to": 46, "value": 0.5855586075446889}, {"from": 273, "to": 269, "value": 0.5790911573422036}, {"from": 273, "to": 266, "value": 0.5790911573422036}, {"from": 272, "to": 151, "value": 0.5789830071147448}, {"from": 272, "to": 121, "value": 0.5789830071147448}, {"from": 271, "to": 32, "value": 0.5780474012928944}, {"from": 271, "to": 227, "value": 0.5780474012928944}, {"from": 270, "to": 109, "value": 0.5769865844168494}, {"from": 270, "to": 242, "value": 0.5769865844168494}, {"from": 269, "to": 62, "value": 0.5766475120246226}, {"from": 269, "to": 18, "value": 0.5766475120246226}, {"from": 268, "to": 262, "value": 0.5757105645923509}, {"from": 268, "to": 50, "value": 0.5757105645923509}, {"from": 267, "to": 254, "value": 0.5747492833686603}, {"from": 267, "to": 148, "value": 0.5747492833686603}, {"from": 266, "to": 265, "value": 0.5741494472563765}, {"from": 266, "to": 70, "value": 0.5741494472563765}, {"from": 265, "to": 3, "value": 0.5729245611452367}, {"from": 265, "to": 264, "value": 0.5729245611452367}, {"from": 264, "to": 263, "value": 0.5715921701386635}, {"from": 264, "to": 197, "value": 0.5715921701386635}, {"from": 263, "to": 221, "value": 0.5684299956201022}, {"from": 263, "to": 259, "value": 0.5684299956201022}, {"from": 262, "to": 86, "value": 0.5677618649796052}, {"from": 262, "to": 182, "value": 0.5677618649796052}, {"from": 261, "to": 69, "value": 0.5649635699847223}, {"from": 261, "to": 19, "value": 0.5649635699847223}, {"from": 260, "to": 253, "value": 0.564313357478345}, {"from": 260, "to": 147, "value": 0.564313357478345}, {"from": 259, "to": 257, "value": 0.5616281912903439}, {"from": 259, "to": 76, "value": 0.5616281912903439}, {"from": 258, "to": 161, "value": 0.5553304362857305}, {"from": 258, "to": 237, "value": 0.5553304362857305}, {"from": 257, "to": 252, "value": 0.5487459096191114}, {"from": 257, "to": 255, "value": 0.5487459096191114}, {"from": 256, "to": 179, "value": 0.5487396432365467}, {"from": 256, "to": 68, "value": 0.5487396432365467}, {"from": 255, "to": 138, "value": 0.5480782507598755}, {"from": 255, "to": 83, "value": 0.5480782507598755}, {"from": 254, "to": 248, "value": 0.5474133619107906}, {"from": 254, "to": 94, "value": 0.5474133619107906}, {"from": 253, "to": 13, "value": 0.542119318975626}, {"from": 253, "to": 48, "value": 0.542119318975626}, {"from": 252, "to": 241, "value": 0.5420445085256409}, {"from": 252, "to": 249, "value": 0.5420445085256409}, {"from": 251, "to": 190, "value": 0.5416267355542832}, {"from": 251, "to": 246, "value": 0.5416267355542832}, {"from": 250, "to": 206, "value": 0.5386929941849479}, {"from": 250, "to": 90, "value": 0.5386929941849479}, {"from": 249, "to": 78, "value": 0.5255425875823992}, {"from": 249, "to": 247, "value": 0.5255425875823992}, {"from": 248, "to": 155, "value": 0.5242030963408517}, {"from": 248, "to": 210, "value": 0.5242030963408517}, {"from": 247, "to": 0, "value": 0.5230782136629515}, {"from": 247, "to": 245, "value": 0.5230782136629515}, {"from": 246, "to": 240, "value": 0.5210224993738884}, {"from": 246, "to": 144, "value": 0.5210224993738884}, {"from": 245, "to": 244, "value": 0.5195405183304026}, {"from": 245, "to": 229, "value": 0.5195405183304026}, {"from": 244, "to": 183, "value": 0.5179137225317461}, {"from": 244, "to": 243, "value": 0.5179137225317461}, {"from": 243, "to": 238, "value": 0.5169940673173326}, {"from": 243, "to": 12, "value": 0.5169940673173326}, {"from": 242, "to": 239, "value": 0.5168086061839945}, {"from": 242, "to": 9, "value": 0.5168086061839945}, {"from": 241, "to": 80, "value": 0.515036243624958}, {"from": 241, "to": 236, "value": 0.515036243624958}, {"from": 240, "to": 226, "value": 0.5097831975479825}, {"from": 240, "to": 21, "value": 0.5097831975479825}, {"from": 239, "to": 188, "value": 0.5089493029191796}, {"from": 239, "to": 212, "value": 0.5089493029191796}, {"from": 238, "to": 223, "value": 0.5086172707633128}, {"from": 238, "to": 235, "value": 0.5086172707633128}, {"from": 237, "to": 34, "value": 0.5053566994062724}, {"from": 237, "to": 75, "value": 0.5053566994062724}, {"from": 236, "to": 233, "value": 0.5018980578926333}, {"from": 236, "to": 93, "value": 0.5018980578926333}, {"from": 235, "to": 77, "value": 0.4998553184852353}, {"from": 235, "to": 232, "value": 0.4998553184852353}, {"from": 234, "to": 140, "value": 0.4994861008136017}, {"from": 234, "to": 146, "value": 0.4994861008136017}, {"from": 233, "to": 205, "value": 0.4989261849424037}, {"from": 233, "to": 231, "value": 0.4989261849424037}, {"from": 232, "to": 20, "value": 0.4931033816262188}, {"from": 232, "to": 228, "value": 0.4931033816262188}, {"from": 231, "to": 225, "value": 0.4911179508459008}, {"from": 231, "to": 29, "value": 0.4911179508459008}, {"from": 230, "to": 33, "value": 0.4874140753779793}, {"from": 230, "to": 128, "value": 0.4874140753779793}, {"from": 229, "to": 88, "value": 0.4776001246757472}, {"from": 229, "to": 159, "value": 0.4776001246757472}, {"from": 228, "to": 218, "value": 0.4756747178821829}, {"from": 228, "to": 224, "value": 0.4756747178821829}, {"from": 227, "to": 73, "value": 0.4694136026723668}, {"from": 227, "to": 51, "value": 0.4694136026723668}, {"from": 226, "to": 203, "value": 0.4685643364136391}, {"from": 226, "to": 4, "value": 0.4685643364136391}, {"from": 225, "to": 106, "value": 0.4673647417074611}, {"from": 225, "to": 104, "value": 0.4673647417074611}, {"from": 224, "to": 8, "value": 0.4657463191058596}, {"from": 224, "to": 219, "value": 0.4657463191058596}, {"from": 223, "to": 222, "value": 0.4611706210395534}, {"from": 223, "to": 217, "value": 0.4611706210395534}, {"from": 222, "to": 216, "value": 0.4578123771771611}, {"from": 222, "to": 22, "value": 0.4578123771771611}, {"from": 221, "to": 5, "value": 0.4531385525566131}, {"from": 221, "to": 27, "value": 0.4531385525566131}, {"from": 220, "to": 97, "value": 0.4525276534497418}, {"from": 220, "to": 10, "value": 0.4525276534497418}, {"from": 219, "to": 111, "value": 0.4482765567623162}, {"from": 219, "to": 214, "value": 0.4482765567623162}, {"from": 218, "to": 52, "value": 0.4478387777742881}, {"from": 218, "to": 215, "value": 0.4478387777742881}, {"from": 217, "to": 40, "value": 0.4438269324738524}, {"from": 217, "to": 213, "value": 0.4438269324738524}, {"from": 216, "to": 119, "value": 0.4435379617027432}, {"from": 216, "to": 41, "value": 0.4435379617027432}, {"from": 215, "to": 123, "value": 0.4332454050370662}, {"from": 215, "to": 54, "value": 0.4332454050370662}, {"from": 214, "to": 108, "value": 0.4309518043864139}, {"from": 214, "to": 185, "value": 0.4309518043864139}, {"from": 213, "to": 209, "value": 0.4299653561657474}, {"from": 213, "to": 65, "value": 0.4299653561657474}, {"from": 212, "to": 39, "value": 0.4246434251165074}, {"from": 212, "to": 63, "value": 0.4246434251165074}, {"from": 211, "to": 31, "value": 0.4230188852984776}, {"from": 211, "to": 132, "value": 0.4230188852984776}, {"from": 210, "to": 23, "value": 0.4165837516566272}, {"from": 210, "to": 118, "value": 0.4165837516566272}, {"from": 209, "to": 14, "value": 0.4116571490773481}, {"from": 209, "to": 177, "value": 0.4116571490773481}, {"from": 208, "to": 11, "value": 0.3981722510689516}, {"from": 208, "to": 79, "value": 0.3981722510689516}, {"from": 207, "to": 157, "value": 0.3275619893580654}, {"from": 207, "to": 47, "value": 0.3275619893580654}, {"from": 206, "to": 67, "value": 0.2957901405977954}, {"from": 206, "to": 169, "value": 0.2957901405977954}, {"from": 205, "to": 15, "value": 0.2927417377823336}, {"from": 205, "to": 24, "value": 0.2927417377823336}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
