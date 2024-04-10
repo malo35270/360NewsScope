@@ -36,6 +36,8 @@ def preprocessing(path, dossier):
     topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
     """topic_labels = topic_model.generate_topic_labels(nr_words=5,topic_prefix=False,word_length=15,separator="-")
     topic_model.set_topic_labels(topic_labels)"""
+    all_topics = topic_model.get_topic_info(full=True)
+    all_topics.to_csv(f'{dossier}/result/all_topics.csv', index=False,encoding='utf8')
     print(topic_model.get_topic_info())
     dataframe['topic'] = topics
 
