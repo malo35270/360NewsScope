@@ -32,6 +32,7 @@ def preprocessing(path, dossier):
     dataframe['content_filtered'] = dataframe['content'].apply(remove_stop_words).str.replace('’', '', regex=False)
 
     #BERTopic
+    
     topic_model = BERTopic(language='english',verbose=True)
     topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
     all_topics = topic_model.get_topic_info()
