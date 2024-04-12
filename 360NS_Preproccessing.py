@@ -25,30 +25,27 @@ def remove_stop_words(text):
 
 
 def preprocessing(path, dossier):
-    dataframe = pd.read_csv(path,sep=',',index_col=0,encoding='utf8')
-    print(dataframe.head())
-
-    dataframe = dataframe.head(10000)
+    dataframe = pd.read_csv(path,sep=',',encoding='utf8')
+    print(dataframe.info())
+    print(dataframe.head)
 
     dataframe['content_filtered'] = dataframe['content'].apply(remove_stop_words).str.replace('’', '', regex=False)
 
     #BERTopic
     topic_model = BERTopic(language='english',verbose=True)
     topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
-    """topic_labels = topic_model.generate_topic_labels(nr_words=5,topic_prefix=False,word_length=15,separator="-")
-    topic_model.set_topic_labels(topic_labels)"""
     all_topics = topic_model.get_topic_info()
     all_topics.to_csv(f'{dossier}/result/all_topics.csv', index=False,encoding='utf8')
     dataframe['topic'] = topics
 
     #KeyBERT
     kw_model = KeyBERT(model='all-MiniLM-L6-v2')
+    print(dataframe['content_filtered'])
     keywords = kw_model.extract_keywords(dataframe['content_filtered'])
     dataframe['keyword'] = keywords
     
     
     hierarchical_topics = topic_model.hierarchical_topics(dataframe['content_filtered'])
-    
     tree = topic_model.get_topic_tree(hierarchical_topics)
     fig = topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
     fig.write_html("figure.html")
@@ -59,13 +56,8 @@ def preprocessing(path, dossier):
 
 def merge_csv(files,dossier):
         dfs = [pd.read_csv(fichier,sep=',',index_col=0,encoding='utf8') for fichier in files]
-
-        # Fusionner tous les DataFrames en un seul
         df_final = pd.concat(dfs, ignore_index=True)
-        
-        # Enregistrer le DataFrame fusionné dans un nouveau fichier CSV
         df_final.to_csv(f"{dossier}/database_merge.csv", index=False,encoding='utf8')
-
         return f"{dossier}/database_merge.csv"
 
 if __name__ == '__main__':
