@@ -51,8 +51,8 @@ def preprocessing(path, dossier):
     fig = topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
     fig.write_html("figure.html")
 
-    dataframe.to_csv(f'{dossier}/result/database_update.csv', index=False,encoding='utf8')
-    hierarchical_topics.to_csv(f"{dossier}/result/database_hierarchical_topics.csv",index=False,encoding='utf8')
+    dataframe.to_csv(f'{dossier}/database_update.csv', index=False,encoding='utf8')
+    hierarchical_topics.to_csv(f"{dossier}/database_hierarchical_topics.csv",index=False,encoding='utf8')
 
 
 def merge_csv(files,dossier):
