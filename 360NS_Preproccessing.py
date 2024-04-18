@@ -12,6 +12,12 @@ nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+from cuml.cluster import HDBSCAN
+from cuml.manifold import UMAP
+
+
+
+
 
 stop_words = set(stopwords.words('english'))
 
@@ -31,8 +37,17 @@ def preprocessing(path, dossier):
 
     dataframe['content_filtered'] = dataframe['content'].apply(remove_stop_words).str.replace('’', '', regex=False)
 
-    #BERTopic
-    topic_model = BERTopic(language='english',verbose=True)
+    #BERTopic on GPU
+    umap_model = UMAP(n_components=5, n_neighbors=15, min_dist=0.0)
+    hdbscan_model = HDBSCAN(min_samples=10, gen_min_span_tree=True)
+
+    # Pass the above models to be used in BERTopic
+    topic_model = BERTopic(umap_model=umap_model, hdbscan_model=hdbscan_model)
+
+
+
+    #BERTopic on CPU
+    #topic_model = BERTopic(language='english',verbose=True)
     topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
     all_topics = topic_model.get_topic_info()
     all_topics.to_csv(f'{dossier}/result/all_topics.csv', index=False,encoding='utf8')
@@ -50,8 +65,8 @@ def preprocessing(path, dossier):
     fig = topic_model.visualize_hierarchy(hierarchical_topics=hierarchical_topics)
     fig.write_html("figure.html")
 
-    dataframe.to_csv(f'{dossier}/result/database_update.csv', index=False,encoding='utf8')
-    hierarchical_topics.to_csv(f"{dossier}/result/database_hierarchical_topics.csv",index=False,encoding='utf8')
+    dataframe.to_csv(f'{dossier}/database_update.csv', index=False,encoding='utf8')
+    hierarchical_topics.to_csv(f"{dossier}/database_hierarchical_topics.csv",index=False,encoding='utf8')
 
 
 def merge_csv(files,dossier):
