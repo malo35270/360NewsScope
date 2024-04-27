@@ -11,9 +11,9 @@ nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import cuml
-from cuml.cluster import HDBSCAN
-from cuml.manifold import UMAP
+import torch
+
+
 
 
 
@@ -37,17 +37,18 @@ def preprocessing(path, dossier):
 
     dataframe['content_filtered'] = dataframe['content'].apply(remove_stop_words).str.replace('’', '', regex=False)
 
-    #BERTopic on GPU
-    umap_model = UMAP(n_components=5, n_neighbors=15, min_dist=0.0)
-    hdbscan_model = HDBSCAN(min_samples=10, gen_min_span_tree=True)
+    
 
-    # Pass the above models to be used in BERTopic
-    topic_model = BERTopic(umap_model=umap_model, hdbscan_model=hdbscan_model)
+    if torch.cuda.is_available():
+        import cuml # type: ignore
+        from cuml.cluster import HDBSCAN # type: ignore
+        from cuml.manifold import UMAP # type: ignore
+        umap_model = UMAP(n_components=5, n_neighbors=15, min_dist=0.0)
+        hdbscan_model = HDBSCAN(min_samples=10, gen_min_span_tree=True)
+        topic_model = BERTopic(umap_model=umap_model, hdbscan_model=hdbscan_model,language='english')
+    else : 
+        topic_model = BERTopic(language='english',verbose=True)
 
-
-
-    #BERTopic on CPU
-    #topic_model = BERTopic(language='english',verbose=True)
     topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
     all_topics = topic_model.get_topic_info()
     all_topics.to_csv(f'{dossier}/result/all_topics.csv', index=False,encoding='utf8')
