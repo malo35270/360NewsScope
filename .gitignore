@@ -1,2 +1,4 @@
 archive/*
 *.html
+*.json
+*.pickle
