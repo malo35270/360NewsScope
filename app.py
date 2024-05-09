@@ -7,20 +7,33 @@ from NS_resultat import NS_Visualization, analyse
 seafoam = seafom.Seafoam()
 
 
-def accordeon(data,evt: gr.SelectData):
+def accordion_func(evt: gr.SelectData,s: int):
     if str(evt.value)=='custom' :
-        return gr.Accordion("Custom Dates", visible=True, open=True)
+        if bool(s):
+            return gr.Accordion("Custom Dates", open=True,visible=False),gr.Number(0, label="Switch a on/off", visible=False)
+        else : 
+            return gr.Accordion("Custom Dates", open=True,visible=True),gr.Number(1, label="Switch a on/off", visible=False)
+    else :
+        return gr.Accordion("Custom Dates", open=True,visible=bool(s)), gr.Number(s, label="Switch a on/off", visible=False)
+
+
+def exception():
+    raise ValueError("The name of the folder isn't right")   
     
 def analyse_gradio(names_folder):
-    list_actions,list_publications = analyse(names_folder)
-    return gr.CheckboxGroup(list_actions,label="Vizualisation", info="Do you want to add some options ?"), gr.CheckboxGroup(list_publications,label="Publications", info="Do you want to add some options ?")
+    try : 
+        list_actions,list_publications = analyse(names_folder)
+        return gr.CheckboxGroup(list_actions,label="Vizualisation", info="Do you want to add some options ?"), gr.CheckboxGroup(list_publications,label="Publications", info="Do you want to add some options ?")
+    except :
+        exception()
+        return None,None
 
 
 def on_select(evt: gr.SelectData):  # SelectData is a subclass of EventData
     print(f"You selected {evt.value} at {evt.index} from {evt.target}")
 
 with gr.Blocks(theme=seafoam) as app:
-    
+    s = gr.Number(0, label="Switch a on/off", visible=False)
     description = gr.Markdown(
     """
     # Welcome to 360 News Score.
@@ -45,7 +58,7 @@ with gr.Blocks(theme=seafoam) as app:
 
     names_folder.submit(fn=analyse_gradio,inputs=[names_folder],outputs=[date_actions,publications])
     date_actions.select(on_select, None, None)
-    date_actions.select(fn=accordeon,inputs=[date_actions],outputs=[Accordion])
+    date_actions.select(fn=accordion_func,inputs=[s],outputs=[Accordion,s])
     preprocesssing.click(fn=preprocessing,inputs=[paths,names_folder],outputs=[paths,date_actions,publications])
     btn.click(fn=NS_Visualization,inputs=[names_folder,date_actions,date_start,date_end,publications,visualization],outputs=[nx_plot,pyvis_html])
     
@@ -53,6 +66,7 @@ with gr.Blocks(theme=seafoam) as app:
 
 
    
-        
+
 if __name__ == "__main__":
-    app.launch(debug=True)
+    
+    app.launch(debug=True,show_error=True)
