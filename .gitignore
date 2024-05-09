@@ -2,3 +2,6 @@ archive/*
 *.html
 *.json
 *.pickle
+gradio/*
+__pycache__/*
+*.graphml
