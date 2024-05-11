@@ -1,6 +1,5 @@
 archive/*
 *.html
-*.json
 *.pickle
 gradio/*
 __pycache__/*

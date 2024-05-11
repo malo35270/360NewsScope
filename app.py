@@ -51,20 +51,21 @@ with gr.Blocks(theme=seafoam) as app:
                 date_start = Calendar(type="datetime", label="Select a start date", info="Click the calendar icon to bring up the calendar.")
                 date_end = Calendar(type="datetime", label="Select a end date", info="Click the calendar icon to bring up the calendar.")
         publications = gr.CheckboxGroup([],label="Publications", info="Do you want to add some options ?")
-        visualization = gr.CheckboxGroup(["NetworkX", "Pyvis",'Save Graph'], label="Output", info="Do you want to add some options ?")
+        visualization = gr.CheckboxGroup(["NetworkX", "Pyvis",'Pickle positions', 'JSON Graph'], label="Output", info="Do you want to add some options ?")
     btn = gr.Button("Visualization")
     
     nx_plot = gr.Plot()
     pyvis_html = gr.HTML(label="Pyvis")
-    output_file = gr.Files(type="filepath")
+    output_file_pos = gr.File(type="filepath")
+    output_file_json = gr.File(type="filepath")
 
     names_folder.submit(fn=analyse_gradio,inputs=[names_folder],outputs=[date_actions,publications])
     date_actions.select(on_select, None, None)
     date_actions.select(fn=accordion_func,inputs=[s],outputs=[Accordion,s])
     preprocesssing.click(fn=preprocessing,inputs=[paths,names_folder],outputs=[paths,date_actions,publications])
-    btn.click(fn=NS_Visualization,inputs=[names_folder,date_actions,date_start,date_end,publications,visualization],outputs=[nx_plot,pyvis_html,output_file])
+    btn.click(fn=NS_Visualization,inputs=[names_folder,date_actions,date_start,date_end,publications,visualization],outputs=[nx_plot,pyvis_html,output_file_pos,output_file_json])
     
-    #gr.ClearButton([paths,number_t,number_l,model,dataframe,options,base_prompt,log,plot], scale=1)
+    gr.ClearButton([paths,names_folder,publications,visualization,nx_plot,pyvis_html,output_file_pos,output_file_json], scale=1)
 
 
    

@@ -5,15 +5,16 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import matplotlib
 import pickle
 import json
 
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-def NS_Visualization(folder_path,date_actions,date_start,date_end,publications,visualization):
-        print(folder_path,date_actions,date_start,date_end,publications,visualization)
-        dict_action_list = {'NetworkX':'networkx', 'Pyvis' : 'pyvis', 'Save Graph': 'save'}
+def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,visualization):
+        print(folder_path,years_actions,date_start,date_end,publications,visualization)
+        dict_action_list = {'NetworkX':'networkx', 'Pyvis' : 'pyvis', 'Pickle positions':"pos", 'JSON Graph':"json"}
         options_list = {}
         for item in dict_action_list:
                 if item in visualization:
@@ -22,25 +23,30 @@ def NS_Visualization(folder_path,date_actions,date_start,date_end,publications,v
                         options_list[dict_action_list[item]] = ''
         hierarchical_topics = pd.read_csv(f"{folder_path}/database_hierarchical_topics.csv",sep=',',encoding='utf8')
         news_data = pd.read_csv(f"{folder_path}/database_update.csv",sep=',',encoding='utf8')
+        news_data['date'] = pd.to_datetime(news_data['date'])
         all_topic = pd.read_csv(f"{folder_path}/all_topics.csv",sep=',',encoding='utf8').iloc[1:].reset_index(drop=True)
-        date_actions = [int(num) for num in date_actions]
+
         if publications != []:        
                 news_data = news_data[news_data['publication'].isin(publications)].reset_index(drop=True)
-        if date_actions != [] :
-                news_data = news_data[news_data['year'].isin(date_actions)].reset_index(drop=True)
-        
+        if years_actions != [] :
+                if 'custom' in years_actions:
+                        years_actions.remove('custom')
+                        filtered_datetime = news_data[(news_data['date'] >= date_start) & (news_data['date'] <= date_end)]
+                        years_actions = [int(num) for num in years_actions]
+                        filtered_year = news_data[news_data['year'].isin(years_actions)]
+                        news_data = pd.concat([filtered_datetime, filtered_year]).drop_duplicates().reset_index(drop=True)
+                else :
+                        years_actions = [int(num) for num in years_actions]
+                        news_data = news_data[news_data['year'].isin(years_actions)].reset_index(drop=True)
         all_topic = all_topic[all_topic['Topic'].isin(news_data['topic'])].reset_index(drop=True)
 
 
         noms_uniques = news_data['publication'].unique()
-        cmap_complete = plt.cm.tab20
-        colors = cmap_complete.colors[:len(noms_uniques)]
+        cmap_complete = ['orange', 'brown', 'pink', 'gray', 'olive', 'cyan' , 'purple', 'green']
+        colors = cmap_complete[:len(noms_uniques)]
 
-        cmap_custom = ListedColormap(colors)
-        couleur_par_journal = {journal: cmap_custom.colors[i] for i, journal in enumerate(noms_uniques)}
+        couleur_par_journal = {journal: colors[i] for i, journal in enumerate(noms_uniques)}
         news_data['Couleur'] = news_data['publication'].map(couleur_par_journal)
-
-
 
         news_net = nx.Graph()
 
@@ -71,12 +77,11 @@ def NS_Visualization(folder_path,date_actions,date_start,date_end,publications,v
                         news_net.add_edge(src, dst) 
                 
 
-
         for index,row in news_data.iterrows():
                 if int(row['topic']) != -1 :
                         news_net.add_node(row['id'],name=row['title'],title=row['id'], size = 1, color=row['Couleur'])
+                        #news_net.add_node(row['id'],name=row['title'],title=row['id'], size = 1, color="black")
                         news_net.add_edge(row['topic'],row['id'])
-
 
         p = dict(nx.shortest_path(news_net, target=hierarchical_topics.iat[0,0]))
         topic_keys = list(all_topic['Topic'].values)
@@ -85,13 +90,13 @@ def NS_Visualization(folder_path,date_actions,date_start,date_end,publications,v
         unique_values = np.concatenate([np.unique(flat_list), news_data['id'].values])
 
         list_nodes = [int(value) for value in unique_values]
-        #list_nodes = list(unique_values)
         news_net = news_net.subgraph(list_nodes)
-        pos = nx.spring_layout(news_net, iterations=50, dim=2)
+        pos = nx.nx_agraph.graphviz_layout(news_net, prog="twopi",root=hierarchical_topics.Parent_ID.astype(int).max())
 
-        if options_list['save'] == 'save':
+        if options_list['pos'] == 'pos':
                 with open(f'{folder_path}/positions.pickle', 'wb') as f:
                         pickle.dump(pos, f)
+        if options_list['json'] == 'json': 
                 graph_json = nx.node_link_data(news_net)
                 with open(f'{folder_path}/my_graph.json', "w") as f:
                         json.dump(graph_json, f)
@@ -106,10 +111,23 @@ def NS_Visualization(folder_path,date_actions,date_start,date_end,publications,v
 
         if options_list['pyvis'] == 'pyvis':
                 news_net_pyvis = Network()
-                news_net_pyvis.from_nx(news_net)
-                news_net_pyvis.barnes_hut()
+                news_net_pyvis.from_nx(nx_graph=news_net,node_size_transf=(lambda x: np.sqrt(x)))
+                for n in news_net_pyvis.nodes:
+                        n.update({'physics': True, 'x':pos[n['id']][0], 'y':pos[n['id']][1]})
+                neighbor_map = news_net_pyvis.get_adj_list()
+                for node in news_net_pyvis.nodes:
+                        node_title_str = node["name"]
+                        neighbors_str = ", ".join(news_net_pyvis.get_node(neighbor)['name'] for neighbor in neighbor_map[node["id"]])
+                        node["title"] = node_title_str + "\n Neighbors : [" + neighbors_str + "]"
+                        node["value"] = len(neighbor_map[node["id"]])
+                with open('options.json', 'r') as f:
+                        options_viz = f.read()
+                        news_net_pyvis.set_options(options_viz)
+                
+                nodes, edges, heading, height, width, options = news_net_pyvis.get_network_data()
                 html = news_net_pyvis.generate_html()
                 html = html.replace("'", "\"")
+                news_net_pyvis.write_html(f"{folder_path}\graphs_pyvis_main.html")
                 
                 data = f"""<iframe style="width: 100%; height: 600px;margin:0 auto" name="result" allow="midi; geolocation; microphone; camera; 
                 display-capture; encrypted-media;" sandbox="allow-modals allow-forms 
@@ -127,23 +145,29 @@ def analyse(folder_path):
     list_date = list(map(str, sorted(news_data['year'].astype(int).unique())))
     list_date.append('custom')
     list_publication = sorted(news_data['publication'].unique())
-    list_publication.insert(0,'all')
     return list_date,list_publication
 
 
 def process_options(options_list, fig, dir_path):
-        print(options_list, fig, dir_path)
         nx_to_return = None
-        pv_to_return = ''
-        pickle_to_return = ''
-        json_to_return = ''
+        pv_to_return = None
+        pickle_to_return = None
+        json_to_return = None
 
-        if options_list['save'] == 'save':
+        if options_list['pos'] == 'pos':
                 pickle_to_return = f"{dir_path}\positions.pickle"
+        if options_list['json'] == 'json':
                 json_to_return = f"{dir_path}\my_graph.json"
         if options_list['networkx'] == 'networkx':
                 nx_to_return = fig
         if options_list['pyvis'] == 'pyvis':
                 with open(f"{dir_path}\graphs_pyvis.html", 'r', encoding='utf-8') as file:
                         pv_to_return = file.read()
-        return nx_to_return,pv_to_return,[pickle_to_return,json_to_return]
+        return nx_to_return,pv_to_return,pickle_to_return,json_to_return
+
+
+
+
+if __name__ == "__main__":
+       nx_to_return,pv_to_return,pickle_to_return,json_to_return =  NS_Visualization("gradio", ['2011','2012', '2013','2014', '2013'], "2024-05-11 00:00:00", "2024-05-11 00:00:00", ['Atlantic', 'New York Times', 'CNN','Breitbart'] ,['Pyvis', 'NetworkX'])
+       plt.show()

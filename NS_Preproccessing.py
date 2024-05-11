@@ -13,12 +13,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import torch
 
-
-
-
-
-
-
 stop_words = set(stopwords.words('english'))
 
 def remove_stop_words(text):
@@ -37,7 +31,6 @@ def preprocessing(files, dossier):
     dataframe['content_filtered'] = dataframe['content'].apply(remove_stop_words).str.replace('’', '', regex=False)
 
     
-
     if torch.cuda.is_available():
         import cuml # type: ignore
         from cuml.cluster import HDBSCAN # type: ignore

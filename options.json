@@ -1,0 +1,60 @@
+{
+    "nodes": {
+      "borderWidth": null,
+      "borderWidthSelected": null,
+      "opacity": null,
+      "size": null
+    },
+    "edges": {
+      "color": {
+        "inherit": false
+      },
+      "selfReferenceSize": null,
+      "selfReference": {
+        "angle": 0.7853981633974483
+      },
+      "smooth": false
+    },
+    "layout": {
+        "improvedLayout":true,
+        "set_edge_minimization" : true,
+        "clusterThreshold": 150,
+        "hierarchical": {
+          "enabled":false,
+          "levelSeparation": 150,
+          "nodeSpacing": 100,
+          "treeSpacing": 500,
+          "blockShifting": true,
+          "edgeMinimization": true,
+          "parentCentralization": true,
+          "direction": "UD", 
+          "sortMethod": "directed", 
+          "shakeTowards": "leaves"  
+        }
+      },
+    "physics": {
+      "enabled": true,
+      "barnesHut": {
+        "theta": 0.5,
+        "gravitationalConstant": -2000,
+        "centralGravity": 0.3,
+        "springLength": 95,
+        "springConstant": 0.04,
+        "damping": 0.09,
+        "avoidOverlap": 0
+      },
+      "minVelocity": 0.75,
+      "solver": "barnesHut",
+      "stabilization": {
+        "enabled": true,
+        "iterations": 1000,
+        "updateInterval": 100,
+        "onlyDynamicEdges": false,
+        "fit": true
+      },
+      "timestep": 0.5,
+      "adaptiveTimestep": true
+    }
+  }
+  
+  
