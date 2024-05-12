@@ -4,6 +4,7 @@ from pyvis.network import Network
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import argparse
 from matplotlib.colors import ListedColormap
 import matplotlib
 import pickle
@@ -13,7 +14,6 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,visualization):
-        print(folder_path,years_actions,date_start,date_end,publications,visualization)
         dict_action_list = {'NetworkX':'networkx', 'Pyvis' : 'pyvis', 'Pickle positions':"pos", 'JSON Graph':"json"}
         options_list = {}
         for item in dict_action_list:
@@ -26,9 +26,9 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
         news_data['date'] = pd.to_datetime(news_data['date'])
         all_topic = pd.read_csv(f"{folder_path}/all_topics.csv",sep=',',encoding='utf8').iloc[1:].reset_index(drop=True)
 
-        if publications != []:        
+        if publications != [] and 'NONE' not in publications:        
                 news_data = news_data[news_data['publication'].isin(publications)].reset_index(drop=True)
-        if years_actions != [] :
+        if years_actions != [] and 'NONE' not in years_actions:
                 if 'custom' in years_actions:
                         years_actions.remove('custom')
                         filtered_datetime = news_data[(news_data['date'] >= date_start) & (news_data['date'] <= date_end)]
@@ -80,7 +80,6 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
         for index,row in news_data.iterrows():
                 if int(row['topic']) != -1 :
                         news_net.add_node(row['id'],name=row['title'],title=row['id'], size = 1, color=row['Couleur'])
-                        #news_net.add_node(row['id'],name=row['title'],title=row['id'], size = 1, color="black")
                         news_net.add_edge(row['topic'],row['id'])
 
         p = dict(nx.shortest_path(news_net, target=hierarchical_topics.iat[0,0]))
@@ -111,7 +110,8 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
 
         if options_list['pyvis'] == 'pyvis':
                 news_net_pyvis = Network()
-                news_net_pyvis.from_nx(nx_graph=news_net,node_size_transf=(lambda x: np.sqrt(x)))
+                #news_net_pyvis.from_nx(nx_graph=news_net,node_size_transf=(lambda x: np.sqrt(x)))
+                news_net_pyvis.from_nx(nx_graph=news_net)
                 for n in news_net_pyvis.nodes:
                         n.update({'physics': True, 'x':pos[n['id']][0], 'y':pos[n['id']][1]})
                 neighbor_map = news_net_pyvis.get_adj_list()
@@ -123,11 +123,9 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
                 with open('options.json', 'r') as f:
                         options_viz = f.read()
                         news_net_pyvis.set_options(options_viz)
-                
-                nodes, edges, heading, height, width, options = news_net_pyvis.get_network_data()
+        
                 html = news_net_pyvis.generate_html()
                 html = html.replace("'", "\"")
-                news_net_pyvis.write_html(f"{folder_path}\graphs_pyvis_main.html")
                 
                 data = f"""<iframe style="width: 100%; height: 600px;margin:0 auto" name="result" allow="midi; geolocation; microphone; camera; 
                 display-capture; encrypted-media;" sandbox="allow-modals allow-forms 
@@ -135,7 +133,7 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
                 allow-top-navigation-by-user-activation allow-downloads" allowfullscreen="" 
                 allowpaymentrequest="" frameborder="0" srcdoc='{html}'></iframe>"""
 
-                with open(f"{folder_path}\graphs_pyvis.html", "w", encoding='utf-8') as f:
+                with open(f"{folder_path}/graphs_pyvis.html", "w", encoding='utf-8') as f:
                         f.write(data)
 
         return process_options(options_list,fig_nx,folder_path)
@@ -168,6 +166,32 @@ def process_options(options_list, fig, dir_path):
 
 
 
+
 if __name__ == "__main__":
-       nx_to_return,pv_to_return,pickle_to_return,json_to_return =  NS_Visualization("gradio", ['2011','2012', '2013','2014', '2013'], "2024-05-11 00:00:00", "2024-05-11 00:00:00", ['Atlantic', 'New York Times', 'CNN','Breitbart'] ,['Pyvis', 'NetworkX'])
-       plt.show()
+        parser = argparse.ArgumentParser(description="NS_Visualization function arguments")
+        parser.add_argument('--folder_path', type=str, required=True, help='Path to the folder containing data')
+        parser.add_argument('--example', action='store_true', help='Start a example, need the folder_path')
+        parser.add_argument('--years_actions', nargs='*',type=str,default=[], help='List of action years (can be empty, pass "NONE")')
+        parser.add_argument('--date_start', type=str, help='Start date in YYYY-MM-DD HH:MM:SS format')
+        parser.add_argument('--date_end', type=str, help='End date in YYYY-MM-DD HH:MM:SS format')
+        parser.add_argument('--publications', nargs='*', default=[], help='List of publications (can be empty, pass "NONE")')
+        parser.add_argument('--visualization',type=str, nargs='+', help='Types of visualization to use')
+
+        args = parser.parse_args()
+        if args.example:
+                nx_to_return,pv_to_return,pickle_to_return,json_to_return =  NS_Visualization(args.folder_path, ['2011','2012', '2013','2014', '2013'], "2024-05-11 00:00:00", "2024-05-11 00:00:00", ['Atlantic', 'New York Times', 'CNN','Breitbart'] ,['Pyvis', 'NetworkX'])
+                plt.show()
+        else:
+        # Ensure that all parameters are provided for normal operations
+                if not all([args.years_actions, args.date_start, args.date_end, args.publications, args.visualization]):
+                        parser.error("The --years_actions, --date_start, --date_end, --publications, and --visualization parameters are required unless --example is specified.")
+                
+                nx_to_return, pv_to_return, pickle_to_return, json_to_return = NS_Visualization(
+                                                                                        args.folder_path,
+                                                                                        args.years_actions,
+                                                                                        args.date_start,
+                                                                                        args.date_end,
+                                                                                        args.publications,
+                                                                                        args.visualization
+                                                                                        )
+                plt.show()

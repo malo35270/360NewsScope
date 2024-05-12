@@ -5,6 +5,7 @@ import os
 from scipy.cluster import hierarchy as sch
 from spacy.lang.en import stop_words
 import numpy as np
+import argparse
 import nltk
 import glob
 nltk.download('stopwords')
@@ -48,7 +49,6 @@ def preprocessing(files, dossier):
 
     #KeyBERT
     kw_model = KeyBERT(model='all-MiniLM-L6-v2')
-    print(dataframe['content_filtered'])
     keywords = kw_model.extract_keywords(dataframe['content_filtered'])
     dataframe['keyword'] = keywords
     
@@ -64,7 +64,6 @@ def preprocessing(files, dossier):
     list_date = list(map(str, sorted(dataframe['year'].astype(int).unique())))
     list_date.append('custom')
     list_publication = sorted(dataframe['publication'].unique())
-    list_publication.insert(0,'all')
 
     return [f'{dossier}/all_topics.csv',f'{dossier}/database_update.csv',f"{dossier}/database_hierarchical_topics.csv"], list_date, list_publication
 
@@ -77,3 +76,10 @@ def merge_csv(files,dossier):
         df_final.to_csv(f"{dossier}/database_merge.csv", index=False,encoding='utf8')
         return f"{dossier}/database_merge.csv"
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Merge CSV files and preprocess data")
+    parser.add_argument('--files', nargs='+', required=True, help="List of file paths to be merged")
+    parser.add_argument('--dossier', type=str, required=True, help="Path to the output folder where the merged file will be stored")
+    
+    args = parser.parse_args()
+    preprocessing(args.files, args.dossier)

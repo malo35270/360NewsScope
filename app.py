@@ -30,14 +30,13 @@ def analyse_gradio(names_folder):
         return None,None
 
 
-def on_select(evt: gr.SelectData):  # SelectData is a subclass of EventData
-    print(f"You selected {evt.value} at {evt.index} from {evt.target}")
-
 with gr.Blocks(theme=seafoam) as app:
     s = gr.Number(0, label="Switch a on/off", visible=False)
     description = gr.Markdown(
     """
     # Welcome to 360 News Scope.
+
+    You can load so
      
     """)
     with gr.Row():
@@ -60,7 +59,6 @@ with gr.Blocks(theme=seafoam) as app:
     output_file_json = gr.File(type="filepath")
 
     names_folder.submit(fn=analyse_gradio,inputs=[names_folder],outputs=[date_actions,publications])
-    date_actions.select(on_select, None, None)
     date_actions.select(fn=accordion_func,inputs=[s],outputs=[Accordion,s])
     preprocesssing.click(fn=preprocessing,inputs=[paths,names_folder],outputs=[paths,date_actions,publications])
     btn.click(fn=NS_Visualization,inputs=[names_folder,date_actions,date_start,date_end,publications,visualization],outputs=[nx_plot,pyvis_html,output_file_pos,output_file_json])
