@@ -1,35 +1,51 @@
 # Welcome to 360 News Scope!
-Welcome to 360 News Scope, where you can explore a visualisation tool for exploring US newspaper articles in the [All the News 2.0](https://components.one/datasets/all-the-news-2-news-articles-dataset) database structure using NLP algorithms ( KeyBert & BERTopic ). 
+Welcome to 360 News Scope, a comprehensive visualization tool for exploring U.S. newspaper articles within the [All the News 2.0](https://components.one/datasets/all-the-news-2-news-articles-dataset) database structure. Our tool leverages advanced NLP algorithms, including KeyBert & BERTopic, to enrich your understanding of news content.
 
-
-You can use the interface made with gradio for a friendly use or directly use the preprocessing or visualisation.
+You can interact with our platform through a user-friendly Gradio interface or directly engage with our preprocessing and visualization capabilities.
 
 ## Gradio Interface : 
+
+To launch the Gradio interface, run the following command in your terminal:
+```bash
     python app.py
+```
 ### Preprocessing process :
-1. **Files of data :** Load csv file of the data file. The data file must have a 'content', 'year' and 'publication' columns.
-2. **Name for the save folder :** Give a name where the resut will be save.
-3. **Preprocessing button :** Press the button.
+
+Follow these steps to preprocess your data:
+
+1. **Files of data :**  Load a CSV file containing the 'content', 'year', and 'publication' columns.
+2. **Name for the save folder :** Specify a folder name where the results will be saved.
+3. **Preprocessing button :** Click the button to start preprocessing.
 
 ### Visualisation process :
-1. **Name for the save folder :** Give a name where the resut if saved, press enter for load the year and publication interface.
-2. **Apply filter :** Select year, date or publication you want to see. If nothing this select, the process don't apply filter.
-3. **Select Actions to made :** Select the actions to made : NetworkX create a image of the networkx, Pyvis creat a iframe to explore dynamicly the network, Pickle positions and Json graph creat file to download.
-4. **Visualization button :** Press the button.
+
+Steps to visualize your data :
+
+1. **Name for the save folder :** Enter a folder name to save the results and load the year and publication selection on the interface.
+2. **Apply filter :** Optionally select years, dates, or publications to filter the data. If no filters are selected, no filtering is applied.
+3. **Select Actions to made :** Select Actions to Make :
+    - NetworkX : Generates an image of the network.
+    - Pyvis : Creates an interactive iframe to dynamically explore the network.
+    - Pickle Positions and Json Graph : Creates files available for download.
+4. **Visualization button :** Click to initiate the visualization process..
 
 ## NS_Preprocessing File : 
 
-Merge CSV files and preprocess data
+This script merges CSV files and preprocesses data.
 
-##### options:
+options :
+```bash
     -h, --help            show this help message and exit
     --files FILES [FILES ...]
                         List of file paths to be merged
     --dossier DOSSIER     Path to the output folder where the merged file will be stored
-
+```
 ## NS_result File : 
-Launch the visualisation 
-###### options :
+
+Launch the visualization process using this script.
+
+options :
+```bash
     -h, --help            show this help message and exit
     --folder_path FOLDER_PATH
                         Path to the folder containing data
@@ -43,5 +59,5 @@ Launch the visualisation
                           List of publications (can be empty, pass "NONE")
     --visualization VISUALIZATION [VISUALIZATION ...]
                           Types of visualization to use
-
+```
                         
