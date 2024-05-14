@@ -2,8 +2,7 @@
     "nodes": {
       "borderWidth": null,
       "borderWidthSelected": null,
-      "opacity": null,
-      "size": null
+      "opacity": null
     },
     "edges": {
       "color": {
@@ -33,7 +32,7 @@
         }
       },
     "physics": {
-      "enabled": true,
+      "enabled": false,
       "barnesHut": {
         "theta": 0.5,
         "gravitationalConstant": -2000,

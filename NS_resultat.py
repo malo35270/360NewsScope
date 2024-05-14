@@ -90,8 +90,12 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
 
         list_nodes = [int(value) for value in unique_values]
         news_net = news_net.subgraph(list_nodes)
-        pos = nx.nx_agraph.graphviz_layout(news_net, prog="twopi",root=hierarchical_topics.Parent_ID.astype(int).max())
-
+        pos = nx.nx_agraph.graphviz_layout(
+                news_net,
+                prog="twopi",
+                root=hierarchical_topics['Parent_ID'].astype(int).max(),
+                args="-Granksep='1.2 equally' -Goverlap='scale'"
+        )
         if options_list['pos'] == 'pos':
                 with open(f'{folder_path}/positions.pickle', 'wb') as f:
                         pickle.dump(pos, f)
@@ -110,12 +114,11 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
 
         if options_list['pyvis'] == 'pyvis':
                 news_net_pyvis = Network()
-                #news_net_pyvis.from_nx(nx_graph=news_net,node_size_transf=(lambda x: np.sqrt(x)))
                 news_net_pyvis.from_nx(nx_graph=news_net)
-                for n in news_net_pyvis.nodes:
-                        n.update({'physics': True, 'x':pos[n['id']][0], 'y':pos[n['id']][1]})
-                neighbor_map = news_net_pyvis.get_adj_list()
+                neighbor_map = news_net_pyvis.get_adj_list()                        
                 for node in news_net_pyvis.nodes:
+                        print(node)
+                        node.update({'physics': False, 'x':pos[node['id']][0], 'y':pos[node['id']][1]})
                         node_title_str = node["name"]
                         neighbors_str = ", ".join(news_net_pyvis.get_node(neighbor)['name'] for neighbor in neighbor_map[node["id"]])
                         node["title"] = node_title_str + "\n Neighbors : [" + neighbors_str + "]"
@@ -123,7 +126,7 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
                 with open('options.json', 'r') as f:
                         options_viz = f.read()
                         news_net_pyvis.set_options(options_viz)
-        
+                
                 html = news_net_pyvis.generate_html()
                 html = html.replace("'", "\"")
                 
@@ -162,9 +165,6 @@ def process_options(options_list, fig, dir_path):
                 with open(f"{dir_path}\graphs_pyvis.html", 'r', encoding='utf-8') as file:
                         pv_to_return = file.read()
         return nx_to_return,pv_to_return,pickle_to_return,json_to_return
-
-
-
 
 
 if __name__ == "__main__":
