@@ -14,7 +14,7 @@ nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import torch
-
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 stop_words = set(stopwords.words('english'))
 
 def remove_stop_words(text):
@@ -28,10 +28,11 @@ def remove_stop_words(text):
 def preprocessing(files, dossier):
     path = merge_csv(files,dossier)
     file_number = split_csv(path,dossier)
+    
     if not os.path.exists(f"{dossier}/BERTopic"):
             os.makedirs(f"{dossier}/BERTopic")
     for i in range(file_number):
-        dataframe = pd.read_csv(f"{dossier}_part{i}.csv",sep=',',encoding='utf8')
+        dataframe = pd.read_csv(f"{dossier}/database_part_{i}.csv",encoding='utf8')
         try :
             dataframe['content_filtered'] = dataframe['article'].fillna('').apply(remove_stop_words).str.replace('’', '', regex=False)
         except KeyError as e:
@@ -41,7 +42,7 @@ def preprocessing(files, dossier):
             except KeyError as e:
                 print(f"KeyError: {e}. Neither 'article' nor 'content' columns exist in the DataFrame.")
         
-        if torch.cuda.is_available():
+        if check_cuda_and_compute_capability():
             import cuml # type: ignore
             from cuml.cluster import HDBSCAN # type: ignore
             from cuml.manifold import UMAP # type: ignore
@@ -53,27 +54,30 @@ def preprocessing(files, dossier):
 
         topics, probs = topic_model.fit_transform(dataframe['content_filtered'])
         embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-        topic_model.save(f"{dossier}/BERTopic/_part{i}_bertopic_model", serialization="safetensors", save_ctfidf=True, save_embedding_model=embedding_model)
+        topic_model.save(f"{dossier}/BERTopic/database_part_{i}_bertopic_model", serialization="safetensors", save_ctfidf=True, save_embedding_model=embedding_model)
 
-    merge_model  = BERTopic.load(f"{dossier}/BERTopic/_part{0}_bertopic_model")
+    merge_model  = BERTopic.load(f"{dossier}/BERTopic/database_part_{0}_bertopic_model")
     for i in range(1,file_number):
-        merge_model_b = BERTopic.load(f"{dossier}/BERTopic/_part{i}_bertopic_model")
+        merge_model_b = BERTopic.load(f"{dossier}/BERTopic/database_part_{i}_bertopic_model")
         merged_model = BERTopic.merge_models([merge_model, merge_model_b])
     
+    if not os.path.exists(f"{dossier}/Preproccessing"):
+            os.makedirs(f"{dossier}/Preproccessing")
+
     all_topics = merge_model.get_topic_info()
-    all_topics.to_csv(f'{dossier}/all_topics.csv', index=False,encoding='utf8')
+    all_topics.to_csv(f'{dossier}/Preproccessing/all_topics.csv', index=False,encoding='utf8')
     dataframe['topic'] = topics  
     
     hierarchical_topics = merge_model.hierarchical_topics(dataframe['content_filtered'])
 
-    dataframe.to_csv(f'{dossier}/database_update.csv', index=False,encoding='utf8')
-    hierarchical_topics.to_csv(f"{dossier}/database_hierarchical_topics.csv",index=False,encoding='utf8')
+    dataframe.to_csv(f'{dossier}/Preproccessing/database_update.csv', index=False,encoding='utf8')
+    hierarchical_topics.to_csv(f"{dossier}/Preproccessing/database_hierarchical_topics.csv",index=False,encoding='utf8')
 
     list_date = list(map(str, sorted(dataframe['year'].astype(int).unique())))
     list_date.append('custom')
     list_publication = sorted(dataframe['publication'].unique())
 
-    return [f'{dossier}/all_topics.csv',f'{dossier}/database_update.csv',f"{dossier}/database_hierarchical_topics.csv"], list_date, list_publication
+    return [f'{dossier}/Preproccessing/all_topics.csv',f'{dossier}/Preproccessing/database_update.csv',f"{dossier}/Preproccessing/database_hierarchical_topics.csv"], list_date, list_publication
 
 
 def merge_csv(files,dossier):
@@ -81,17 +85,26 @@ def merge_csv(files,dossier):
         df_final = pd.concat(dfs, ignore_index=True)
         if not os.path.exists(f"{dossier}"):
             os.makedirs(f"{dossier}")
-        df_final.to_csv(f"{dossier}/database_merge.csv", index=False,encoding='utf8')
-        return f"{dossier}/database_merge.csv"
+        df_final.to_csv(f"{dossier}/database.csv", index=False,encoding='utf8')
+        return f"{dossier}/database.csv"
 
-def split_csv(file_path, chunk_size=100000):
+def split_csv(file_path,dossier, chunk_size=100000):
     chunk_iter = pd.read_csv(file_path, chunksize=chunk_size,sep=',',encoding='utf8')
     file_number = 0
     for chunk in chunk_iter:
-        new_file_path = f"{file_path[:-4]}_part{file_number}.csv"
+        new_file_path = f"{dossier}/database_part_{file_number}.csv"
         chunk.to_csv(new_file_path, index=False,encoding='utf8')
         file_number += 1
     return file_number
+
+
+def check_cuda_and_compute_capability(required_capability=(7, 0)):
+    if torch.cuda.is_available():
+        device_index = torch.cuda.current_device()
+        capability = torch.cuda.get_device_capability(device_index)
+        if capability >= required_capability:
+            return True
+    return False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merge CSV files and preprocess data")
@@ -99,4 +112,4 @@ if __name__ == "__main__":
     parser.add_argument('--dossier', type=str, required=True, help="Path to the output folder where the merged file will be stored")
     
     args = parser.parse_args()
-    preprocessing(args.files, args.dossier)
+    preprocessing(args.files, args.dossier)    
