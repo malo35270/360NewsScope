@@ -21,10 +21,11 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
                         options_list[dict_action_list[item]] = dict_action_list[item]
                 else :
                         options_list[dict_action_list[item]] = ''
-        hierarchical_topics = pd.read_csv(f"{folder_path}/database_hierarchical_topics.csv",sep=',',encoding='utf8')
-        news_data = pd.read_csv(f"{folder_path}/database_update.csv",sep=',',encoding='utf8')
+        hierarchical_topics = pd.read_csv(f"{folder_path}/Preproccessing/database_hierarchical_topics.csv",sep=',',encoding='utf8')
+        news_data = pd.read_csv(f"{folder_path}/Preproccessing/database_update.csv",sep=',',encoding='utf8')
         news_data['date'] = pd.to_datetime(news_data['date'])
-        all_topic = pd.read_csv(f"{folder_path}/all_topics.csv",sep=',',encoding='utf8').iloc[1:].reset_index(drop=True)
+        
+        all_topic = pd.read_csv(f"{folder_path}/Preproccessing/all_topics.csv",sep=',',encoding='utf8').iloc[1:].reset_index(drop=True)
 
         if publications != [] and 'NONE' not in publications:        
                 news_data = news_data[news_data['publication'].isin(publications)].reset_index(drop=True)
@@ -47,7 +48,6 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
 
         couleur_par_journal = {journal: colors[i] for i, journal in enumerate(noms_uniques)}
         news_data['Couleur'] = news_data['publication'].map(couleur_par_journal)
-
         news_net = nx.Graph()
 
         topic_to_name = dict(zip(hierarchical_topics.Child_Left_ID, hierarchical_topics.Child_Left_Name))
@@ -79,14 +79,14 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
 
         for index,row in news_data.iterrows():
                 if int(row['topic']) != -1 :
-                        news_net.add_node(row['id'],name=row['title'],title=row['id'], size = 1, color=row['Couleur'])
-                        news_net.add_edge(row['topic'],row['id'])
+                        news_net.add_node(index,name=row['title'],title=index, size = 1, color=row['Couleur'])
+                        news_net.add_edge(row['topic'],index)
 
         p = dict(nx.shortest_path(news_net, target=hierarchical_topics.iat[0,0]))
         topic_keys = list(all_topic['Topic'].values)
         values = [p.get(key) for key in topic_keys]
         flat_list = [node for sublist in values for node in sublist]
-        unique_values = np.concatenate([np.unique(flat_list), news_data['id'].values])
+        unique_values = np.concatenate([np.unique(flat_list), news_data.index.values])
 
         list_nodes = [int(value) for value in unique_values]
         news_net = news_net.subgraph(list_nodes)
@@ -113,12 +113,18 @@ def NS_Visualization(folder_path,years_actions,date_start,date_end,publications,
                 nx.draw_networkx(news_net, node_size=sizes, node_color=colors,pos=pos, ax=ax, **plot_options)
 
         if options_list['pyvis'] == 'pyvis':
-                news_net_pyvis = Network()
+                news_net_pyvis = Network(cdn_resources='in_line')
                 news_net_pyvis.from_nx(nx_graph=news_net)
                 neighbor_map = news_net_pyvis.get_adj_list()                        
                 for node in news_net_pyvis.nodes:
-                        print(node)
-                        node.update({'physics': False, 'x':pos[node['id']][0], 'y':pos[node['id']][1]})
+                        
+                        if node['color'] == 'red':
+                                node.update({'physics': False, 'x':pos[node['id']][0], 'y':pos[node['id']][1], 'size': np.exp(node['size'])})
+                        if node['color'] == 'blue':
+                                node.update({'physics': False, 'x':pos[node['id']][0], 'y':pos[node['id']][1], 'size': 100*node['size']})
+                        else : 
+                                node.update({'physics': False, 'x':pos[node['id']][0], 'y':pos[node['id']][1]})
+                        
                         node_title_str = node["name"]
                         neighbors_str = ", ".join(news_net_pyvis.get_node(neighbor)['name'] for neighbor in neighbor_map[node["id"]])
                         node["title"] = node_title_str + "\n Neighbors : [" + neighbors_str + "]"
@@ -162,7 +168,8 @@ def process_options(options_list, fig, dir_path):
         if options_list['networkx'] == 'networkx':
                 nx_to_return = fig
         if options_list['pyvis'] == 'pyvis':
-                with open(f"{dir_path}\graphs_pyvis.html", 'r', encoding='utf-8') as file:
+                file_path = os.path.join(dir_path, 'graphs_pyvis.html')
+                with open(file_path, 'r', encoding='utf-8') as file:
                         pv_to_return = file.read()
         return nx_to_return,pv_to_return,pickle_to_return,json_to_return
 
@@ -179,7 +186,7 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         if args.example:
-                nx_to_return,pv_to_return,pickle_to_return,json_to_return =  NS_Visualization(args.folder_path, ['2011','2012', '2013','2014', '2013'], "2024-05-11 00:00:00", "2024-05-11 00:00:00", ['Atlantic', 'New York Times', 'CNN','Breitbart'] ,['Pyvis', 'NetworkX'])
+                nx_to_return,pv_to_return,pickle_to_return,json_to_return =  NS_Visualization(args.folder_path, "NONE", "2024-05-11 00:00:00", "2024-05-11 00:00:00", ['Vox', 'New York Times', 'CNN','Breitbart'] ,['Pyvis', 'NetworkX'])
                 plt.show()
         else:
         # Ensure that all parameters are provided for normal operations
